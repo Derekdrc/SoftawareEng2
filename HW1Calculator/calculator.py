@@ -21,6 +21,7 @@ def division(num1, num2):
 
 
 def main():
+    """Main continously accepts user input on the numbers and function desired with exception handling until user is done"""
     while True:
         try:
             user_choice = int(input(
