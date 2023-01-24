@@ -22,33 +22,33 @@ def division(num1, num2):
     return num1 / num2
 
 
-def sin(num1):
+def sin(num):
     """Naturally uses degrees, have to convert if want radians"""
-    return math.sin(num1)
+    return math.sin(num)
 
 
-def cos(num1):
-    return math.cos(num1)
+def cos(num):
+    return math.cos(num)
 
 
-def tan(num1):
-    return math.tan(num1)
+def tan(num):
+    return math.tan(num)
 
 
-def log(num1, Base):
-    return math.log(num1, Base)
+def log(num, base):
+    return math.log(num, base)
 
 
-def power(num1, exponent):
-    return math.pow(num1, exponent)
+def power(num, exponent):
+    return math.pow(num, exponent)
 
 
-def square_root(num1):
-    return math.sqrt(num1)
+def square_root(num):
+    return math.sqrt(num)
 
 
-def factorial(num1):
-    return math.factorial(num1)
+def factorial(num):
+    return math.factorial(num)
 
 
 def main():
@@ -56,7 +56,18 @@ def main():
     while True:
         try:
             user_choice = int(input(
-                "Please enter '1' to add two numbers, enter '2' to subtract two numbers, enter '3' to multiply two numbers, enter '4' to divide two numbers, and enter '5' to end program: "))
+                '''Enter '1' to add two numbers \n 
+                Enter '2' to subtract two numbers \n
+                Enter '3' to multiply two numbers \n 
+                Enter '4' to divide two numbers \n
+                Enter '5' to find sin of a number \n
+                Enter '6' to find cos of a number \n
+                Enter '7' to find tan of a number \n
+                Enter '8' to find log of a number \n
+                Enter '9' to calculate a number to a given power\n
+                Enter '10' to find square root of a number \n
+                Enter '11' to find the factorial of a number \n
+                Enter '12' to end program: '''))
         except ValueError:
             print("Not valid input. Please try again.")
             continue
@@ -79,6 +90,47 @@ def main():
                 num2 = float(input("The denominator can not be 0. Please enter the second number you wish to divide: "))
             print(f" {num1} / {num2} is {division(num1, num2)}")
         elif user_choice == 5:
+            num = float(input("Please enter the number you wish to find the sin of: "))
+            degrees = int(input("If this number is in degrees press '1', if it is in radians press '2': "))
+            if (degrees == 1):
+                print(f"The sin of {num} is {sin(num)}")
+            elif (degrees == 2):
+                print(f"The sin of {num} is {sin(math.radians(num))}")
+            else:
+                print("Not a valid input. Please try again")
+        elif user_choice == 6:
+            num = float(input("Please enter the number you wish to find the cos of: "))
+            degrees = int(input("If this number is in degrees press '1', if it is in radians press '2': "))
+            if (degrees == 1):
+                print(f"The cos of {num} is {cos(num)}")
+            elif (degrees == 2):
+                print(f"The cos of {num} is {cos(math.radians(num))}")
+            else:
+                print("Not a valid input. Please try again")
+        elif user_choice == 7:
+            num = float(input("Please enter the number you wish to find the tan of: "))
+            degrees = int(input("If this number is in degrees press '1', if it is in radians press '2': "))
+            if (degrees == 1):
+                print(f"The tan of {num} is {tan(num)}")
+            elif (degrees == 2):
+                print(f"The tan of {num} is {tan(math.radians(num))}")
+            else:
+                print("Not a valid input. Please try again")
+        elif user_choice == 8:
+            num = float(input("Please enter the number you wish to calculate the log of: "))
+            base = float(input("Please enter the log base you wish to use: "))
+            print(f"The log of {num} with base {base} is {log(num,base)}")
+        elif user_choice == 9:
+            num = float(input("Please enter the number you wish to raise to a power: "))
+            exponent = float(input("Please enter the exponent you wish to use: "))
+            print(f"{num} to the power of {exponent} is {power(num,exponent)}")
+        elif user_choice == 10:
+            num = float(input("Please enter the number you wish to take the square root of: "))
+            print(f"The square root of {num} is {square_root(num)}")
+        elif user_choice == 11:
+            num = float(input("Please enter the number you wish to find the factorial of: "))
+            print(f"{num} factorial is {factorial(num)}")
+        elif user_choice == 12:
             print("Goodbye.")
             break
         else:
