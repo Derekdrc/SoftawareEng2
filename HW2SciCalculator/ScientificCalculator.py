@@ -56,17 +56,18 @@ def main():
     while True:
         try:
             user_choice = int(input(
-                '''Enter '1' to add two numbers \n 
-                Enter '2' to subtract two numbers \n
-                Enter '3' to multiply two numbers \n 
-                Enter '4' to divide two numbers \n
-                Enter '5' to find sin of a number \n
-                Enter '6' to find cos of a number \n
-                Enter '7' to find tan of a number \n
-                Enter '8' to find log of a number \n
-                Enter '9' to calculate a number to a given power\n
-                Enter '10' to find square root of a number \n
-                Enter '11' to find the factorial of a number \n
+                '''\n
+                Enter '1' to add two numbers 
+                Enter '2' to subtract two numbers 
+                Enter '3' to multiply two numbers 
+                Enter '4' to divide two numbers 
+                Enter '5' to find sin of a number 
+                Enter '6' to find cos of a number 
+                Enter '7' to find tan of a number 
+                Enter '8' to find log of a number 
+                Enter '9' to calculate a number to a given power
+                Enter '10' to find square root of a number 
+                Enter '11' to find the factorial of a number 
                 Enter '12' to end program: '''))
         except ValueError:
             print("Not valid input. Please try again.")
@@ -128,7 +129,7 @@ def main():
             num = float(input("Please enter the number you wish to take the square root of: "))
             print(f"The square root of {num} is {square_root(num)}")
         elif user_choice == 11:
-            num = float(input("Please enter the number you wish to find the factorial of: "))
+            num = int(input("Please enter the number you wish to find the factorial of: "))
             print(f"{num} factorial is {factorial(num)}")
         elif user_choice == 12:
             print("Goodbye.")
