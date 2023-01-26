@@ -106,9 +106,9 @@ def main():
             num = float(input("Please enter the number you wish to find the sin of: "))
             degrees = int(input("If this number is in degrees press '1', if it is in radians press '2': "))
             if (degrees == 1):
-                print(f"The sin of {num} is {sin(num)}")
-            elif (degrees == 2):
                 print(f"The sin of {num} is {sin(math.radians(num))}")
+            elif (degrees == 2):
+                print(f"The sin of {num} is {sin(num)}")
             else:
                 print("Not a valid input. Please try again")
         elif user_choice == 6:
@@ -116,9 +116,9 @@ def main():
             num = float(input("Please enter the number you wish to find the cos of: "))
             degrees = int(input("If this number is in degrees press '1', if it is in radians press '2': "))
             if (degrees == 1):
-                print(f"The cos of {num} is {cos(num)}")
-            elif (degrees == 2):
                 print(f"The cos of {num} is {cos(math.radians(num))}")
+            elif (degrees == 2):
+                print(f"The cos of {num} is {cos(num)}")
             else:
                 print("Not a valid input. Please try again")
         elif user_choice == 7:
@@ -126,9 +126,9 @@ def main():
             num = float(input("Please enter the number you wish to find the tan of: "))
             degrees = int(input("If this number is in degrees press '1', if it is in radians press '2': "))
             if (degrees == 1):
-                print(f"The tan of {num} is {tan(num)}")
-            elif (degrees == 2):
                 print(f"The tan of {num} is {tan(math.radians(num))}")
+            elif (degrees == 2):
+                print(f"The tan of {num} is {tan(num)}")
             else:
                 print("Not a valid input. Please try again")
         elif user_choice == 8:
