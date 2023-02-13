@@ -7,9 +7,12 @@ import tkinter as tk
 from tkinter import *
 from tkinter import ttk
 import math
+import os
 
 # global var for degrees vs radians
 Degrees = True
+absolute_path = os.path.dirname(__file__)
+
 
 LARGEFONT = ("Verdana", 24)
 
@@ -74,54 +77,73 @@ class main_page(tk.Frame):
         def button_add():
             first_number = e.get()
             global f_num
-            global math
-            math = "add"
+            global Math
+            Math = "add"
             f_num = float(first_number)
             e.delete(0, END)
 
         def button_subtract():
             first_number = e.get()
             global f_num
-            global math
-            math = "subtract"
+            global Math
+            Math = "subtract"
             f_num = float(first_number)
             e.delete(0, END)
 
         def button_multiply():
             first_number = e.get()
             global f_num
-            global math
-            math = "multiply"
+            global Math
+            Math = "multiply"
             f_num = float(first_number)
             e.delete(0, END)
 
         def button_divide():
             first_number = e.get()
             global f_num
-            global math
-            math = "divide"
+            global Math
+            Math = "divide"
             f_num = float(first_number)
             e.delete(0, END)
             button_0.configure(bg='red', command=lambda: do_nothing)
+
+        def button_sqrt():
+            first_number = e.get()
+            global f_num
+            f_num = float(first_number)
+            e.delete(0, END)
+            ans = round(math.sqrt(f_num), 3)
+            e.insert(0, str(ans))
+
+        def button_log():
+            first_number = e.get()
+            global f_num
+            global Math
+            Math = "log"
+            f_num = float(first_number)
+            e.delete(0, END)
 
         def button_equal():
             second_number = e.get()
             e.delete(0, END)
 
-            if math == "add":
+            if Math == "add":
                 e.insert(0, f_num + float(second_number))
 
-            elif math == "subtract":
+            elif Math == "subtract":
                 e.insert(0, f_num - float(second_number))
 
-            elif math == "multiply":
+            elif Math == "multiply":
                 e.insert(0, f_num * float(second_number))
 
-            elif math == "divide":
+            elif Math == "divide":
                 if (second_number == '0' or second_number == ''):
                     e.insert(0, "ERROR: Div by 0",)
                 else:
                     e.insert(0, str(round(f_num / float(second_number), 6)))
+            elif Math == "log":
+                ans = round(math.log(f_num, float(second_number)), 3)
+                e.insert(0, str(ans))
 
         def button_click(num):
             if (num in (1, 2, 3, 4, 5, 6, 7, 8, 9)):
@@ -139,6 +161,11 @@ class main_page(tk.Frame):
         # define entry box
         e = Entry(self, width=15, borderwidth=5, font=('Arial', 24))
         e.grid(row=0, column=1, columnspan=5, padx=10, pady=10)
+
+        # images
+        settings_img_path = os.path.join(absolute_path, 'images/settings.png')
+        settings_photo = PhotoImage(file=settings_img_path)
+        settings_photo_sub = settings_photo.subsample(3, 3)
 
         # define buttons
 
@@ -161,13 +188,14 @@ class main_page(tk.Frame):
         button_minus = Button(self, text="-", padx=40, pady=20, command=button_subtract)
         button_multiply = Button(self, text="*", padx=40, pady=20, command=button_multiply)
         button_divide = Button(self, text="/", padx=40, pady=20, command=button_divide)
-        button_log = Button(self, text="log", padx=40, pady=20, command=button_add)
-        button_sqrt = Button(self, text="\u221a", padx=40, pady=20, command=button_add)
+        button_log = Button(self, text="log", padx=40, pady=20, command=button_log)
+        button_sqrt = Button(self, text="\u221a", padx=40, pady=20, command=button_sqrt)
 
         button_factorial = Button(self, text="!", padx=40, pady=20, command=button_add)
 
         button_temp_page = Button(self, text="Temperature", padx=40, pady=20,  command=lambda: controller.show_frame("temperature_page"))
-        button_settings_page = Button(self, text="Settings", padx=40, pady=20, command=lambda: controller.show_frame("settings_page"))
+        button_settings_page = Button(self, image=settings_photo_sub, padx=40, pady=20, bg='white', command=lambda: controller.show_frame("settings_page"))
+        button_settings_page.image = settings_photo_sub  # keep a reference or smth so that button actually show img??? no clue why but this line is necessary
         button_currency_page = Button(self, text="Currency Exchange", padx=40, pady=20,  command=lambda: controller.show_frame("currency_page"))
 
         # display buttons
