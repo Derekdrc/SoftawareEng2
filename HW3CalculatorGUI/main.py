@@ -9,12 +9,15 @@ from tkinter import ttk
 import math
 import os
 
-# global var for degrees vs radians
-Degrees = True
-absolute_path = os.path.dirname(__file__)
-
-
 LARGEFONT = ("Verdana", 24)
+
+
+class Controller:
+    def __init__(self):
+        self.current_entry_num = 0
+        self.degrees = True
+        self.absolute_path = os.path.dirname(__file__)
+        self.second = False
 
 
 class page_container(tk.Tk):
@@ -36,7 +39,7 @@ class page_container(tk.Tk):
 
         # iterating through a tuple consisting
         # of the different page layouts
-        for F, geometry in zip((main_page, settings_page, temperature_page, currency_page, second_page), ('440x460', '450x200', '450x200', '450x200', '440x460')):
+        for F, geometry in zip((main_page, settings_page, temperature_page, currency_page), ('440x460', '450x200', '450x200', '450x200')):
             page_name = F.__name__
             frame = F(parent=container, controller=self)
 
@@ -62,17 +65,18 @@ class page_container(tk.Tk):
 
 
 class main_page(tk.Frame):
-    current_entry_num = 0
 
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
+        self.control = Controller()
 
         def button_clear():
             e.delete(0, END)
-            button_0.configure(bg='cyan', command=lambda: button_click(0))
+            if not self.control.second:
+                button_0.configure(bg='cyan', command=lambda: button_click(0))
 
         def do_nothing():
-            return
+            ...
 
         def button_add():
             first_number = e.get()
@@ -151,21 +155,96 @@ class main_page(tk.Frame):
             box = e.get()
             e.delete(0, END)
             e.insert(0, str(box) + str(num))
-            main_page.current_entry_num = float(str(box) + (str(num)))
 
         def button_decimal():
             box = e.get()
             e.delete(0, END)
             e.insert(0, str(box) + '.')
 
-        # define entry box
-        e = Entry(self, width=15, borderwidth=5, font=('Arial', 24))
-        e.grid(row=0, column=1, columnspan=5, padx=10, pady=10)
+        def factorial():
+            print("h")
+
+        def button_sin():
+            box = e.get()
+            if self.control.degrees == False:
+                e.delete(0, END)
+                e.insert(0, str(round(math.sin(float(box)), 3)))
+            else:
+                e.delete(0, END)
+                e.insert(0, str(round(math.sin(math.radians(float(box))), 3)))
+
+        def button_cos():
+            box = e.get()
+            if self.control.degrees == False:
+                e.delete(0, END)
+                e.insert(0, str(round(math.cos(float(box)), 3)))
+            else:
+                e.delete(0, END)
+                e.insert(0, str(round(math.cos(math.radians(float(box))), 3)))
+
+        def button_tan():
+            box = e.get()
+            if self.control.degrees == False:
+                e.delete(0, END)
+                e.insert(0, str(round(math.tan(float(box)), 3)))
+            else:
+                e.delete(0, END)
+                e.insert(0, str(round(math.tan(math.radians(float(box))), 3)))
+
+        def button_factorial():
+            box = e.get()
+            if float(box) >= 0:
+                num = int(box)
+                e.delete(0, END)
+                e.insert(0, str(math.factorial(num)))
+            else:
+                e.delete(0, END)
+                e.insert(0, "ERROR")
+
+        def second_button_click():
+            if not self.control.second:
+                self.control.second = True
+                button_0.config(bg='gray', command=lambda: do_nothing)
+                button_1.config(bg='gray', command=lambda: do_nothing)
+                button_2.config(bg='gray', command=lambda: do_nothing)
+                button_3.config(bg='gray', command=lambda: do_nothing)
+                button_4.config(bg='gray', command=lambda: do_nothing)
+                button_5.config(bg='gray', command=lambda: do_nothing)
+                button_6.config(bg='gray', command=lambda: do_nothing)
+                button_7.config(bg='gray', command=lambda: do_nothing)
+                button_8.config(bg='gray', command=lambda: do_nothing)
+                button_9.config(bg='gray', command=lambda: do_nothing)
+                button_0.config(bg='gray', command=lambda: do_nothing)
+                button_log_sin.config(bg='red', text="Sin", command=lambda: button_sin())
+                button_sqrt_cos.config(bg='red', text="Cos", command=lambda: button_cos())
+                button_divide_tan.config(bg='red', text="Tan", command=lambda: button_tan())
+                button_multiply_factorial.config(bg='red', text="!", command=lambda: button_factorial())
+                button_2nd.config(bg='red', fg='black')
+            else:
+                self.control.second = False
+                button_0.config(bg='cyan', command=lambda: button_click(0))
+                button_1.config(bg='cyan', command=lambda: button_click(1))
+                button_2.config(bg='cyan', command=lambda: button_click(2))
+                button_3.config(bg='cyan', command=lambda: button_click(3))
+                button_4.config(bg='cyan', command=lambda: button_click(4))
+                button_5.config(bg='cyan', command=lambda: button_click(5))
+                button_6.config(bg='cyan', command=lambda: button_click(6))
+                button_7.config(bg='cyan', command=lambda: button_click(7))
+                button_8.config(bg='cyan', command=lambda: button_click(8))
+                button_9.config(bg='cyan', command=lambda: button_click(9))
+                button_log_sin.config(bg='white', text="log", command=lambda: button_log())
+                button_sqrt_cos.config(bg='white', text="\u221a", command=lambda: button_sqrt())
+                button_divide_tan.config(bg='white', text="/", command=lambda: button_divide())
+                button_multiply_factorial.config(bg='white', text="*", command=lambda: button_multiply())
+                button_2nd.config(bg='white', fg='red')
 
         # images
-        settings_img_path = os.path.join(absolute_path, 'images/settings.png')
+        settings_img_path = os.path.join(self.control.absolute_path, 'images/settings.png')
         settings_photo = PhotoImage(file=settings_img_path)
         settings_photo_sub = settings_photo.subsample(3, 3)
+
+        e = Entry(self, width=15, borderwidth=5, font=('Arial', 24))
+        e.grid(row=0, column=1, columnspan=5, padx=10, pady=10)
 
         # define buttons
 
@@ -183,15 +262,13 @@ class main_page(tk.Frame):
         button_decimal = Button(self, text=".", padx=40, pady=20, command=button_decimal)
         button_clear = Button(self, text="Clear", padx=40, pady=20, command=button_clear)
         button_equal = Button(self, text="=", padx=40, pady=20, command=button_equal)
-        button_2nd = Button(self, text="2nd", fg='#f00', padx=40, pady=20, command=lambda: controller.show_frame("second_page"))
+        button_2nd = Button(self, text="2nd", fg='#f00', padx=40, pady=20, command=second_button_click)
         button_plus = Button(self, text="+", padx=40, pady=20, command=button_add)
         button_minus = Button(self, text="-", padx=40, pady=20, command=button_subtract)
-        button_multiply = Button(self, text="*", padx=40, pady=20, command=button_multiply)
-        button_divide = Button(self, text="/", padx=40, pady=20, command=button_divide)
-        button_log = Button(self, text="log", padx=40, pady=20, command=button_log)
-        button_sqrt = Button(self, text="\u221a", padx=40, pady=20, command=button_sqrt)
-
-        button_factorial = Button(self, text="!", padx=40, pady=20, command=button_add)
+        button_multiply_factorial = Button(self, text="*", padx=40, pady=20, command=button_multiply)
+        button_divide_tan = Button(self, text="/", padx=40, pady=20, command=button_divide)
+        button_log_sin = Button(self, text="log", padx=40, pady=20, command=button_log)
+        button_sqrt_cos = Button(self, text="\u221a", padx=40, pady=20, command=button_sqrt)
 
         button_temp_page = Button(self, text="Temperature", padx=40, pady=20,  command=lambda: controller.show_frame("temperature_page"))
         button_settings_page = Button(self, image=settings_photo_sub, padx=40, pady=20, bg='white', command=lambda: controller.show_frame("settings_page"))
@@ -201,9 +278,9 @@ class main_page(tk.Frame):
         # display buttons
 
         button_clear.grid(row=2, column=0)
-        button_log.grid(row=2, column=1)
-        button_sqrt.grid(row=2, column=2)
-        button_divide.grid(row=2, column=3)
+        button_log_sin.grid(row=2, column=1)
+        button_sqrt_cos.grid(row=2, column=2)
+        button_divide_tan.grid(row=2, column=3)
 
         button_1.grid(row=5, column=0)
         button_2.grid(row=5, column=1)
@@ -218,7 +295,7 @@ class main_page(tk.Frame):
         button_7.grid(row=3, column=0)
         button_8.grid(row=3, column=1)
         button_9.grid(row=3, column=2)
-        button_multiply.grid(row=3, column=3)
+        button_multiply_factorial.grid(row=3, column=3)
 
         button_2nd.grid(row=6, column=0, pady=5)
         button_0.grid(row=6, column=1)
@@ -231,98 +308,10 @@ class main_page(tk.Frame):
         button_settings_page.grid(row=0, column=0)
 
 
-class second_page(main_page, tk.Frame):
-    # page that handles 2nd functions
-    def __init__(self, parent, controller):
-        tk.Frame.__init__(self, parent)
-
-        # define entry box
-        e = Entry(self, width=15, borderwidth=5, font=('Arial', 24))
-        e.insert(0, str(main_page.current_entry_num))
-        e.grid(row=0, column=1, columnspan=5, padx=10, pady=10, sticky=E+W+N+S)
-
-        # define num buttons, make them do nothing
-        button_1 = Button(self, text="1", padx=40, pady=20)
-        button_2 = Button(self, text="2", padx=40, pady=20)
-        button_3 = Button(self, text="3", padx=40, pady=20)
-        button_4 = Button(self, text="4", padx=40, pady=20)
-        button_5 = Button(self, text="5", padx=40, pady=20)
-        button_6 = Button(self, text="6", padx=40, pady=20)
-        button_7 = Button(self, text="7", padx=40, pady=20)
-        button_8 = Button(self, text="8", padx=40, pady=20)
-        button_9 = Button(self, text="9", padx=40, pady=20)
-        button_0 = Button(self, text="0", padx=40, pady=20)
-
-        # define other buttons
-        button_decimal = Button(self, text=".", padx=40, pady=20)
-        button_clear = Button(self, text="Clear", padx=40, pady=20)
-        button_equal = Button(self, text="=", padx=40, pady=20)
-        button_2nd = Button(self, text="2nd", bg='#f00', fg='#fff', padx=40, pady=20, command=lambda: controller.show_frame("main_page"))
-        button_plus = Button(self, text="+", padx=40, pady=20)
-        button_minus = Button(self, text="-", padx=40, pady=20)
-        button_multiply = Button(self, text="*", padx=40, pady=20)
-        button_divide = Button(self, text="/", padx=40, pady=20)
-        button_log = Button(self, text="log", padx=40, pady=20)
-        button_sqrt = Button(self, text="\u221a", padx=40, pady=20)
-
-        button_factorial = Button(self, text="!", bg='#f00', fg='#fff', padx=40, pady=20, command=lambda: factorial())
-        button_sin = Button(self, text="Sin", bg='#f00', fg='#fff', padx=40, pady=20, command=lambda: sin())
-        button_cos = Button(self, text="Cos", bg='#f00', fg='#fff', padx=40, pady=20, command=lambda: cos())
-        button_tan = Button(self, text="Tan", bg='#f00', fg='#fff', padx=40, pady=20, command=lambda: tan())
-
-        button_temp_page = Button(self, text="Temperature", padx=40, pady=20,  command=lambda: controller.show_frame("temperature_page"))
-        button_settings_page = Button(self, text="Settings", padx=40, pady=20, command=lambda: controller.show_frame("settings_page"))
-        button_currency_page = Button(self, text="Currency Exchange", padx=40, pady=20,  command=lambda: controller.show_frame("currency_page"))
-
-        # display buttons
-
-        button_clear.grid(row=2, column=0)
-        button_sin.grid(row=2, column=1)
-        button_cos.grid(row=2, column=2)
-        button_tan.grid(row=2, column=3)
-
-        button_1.grid(row=5, column=0)
-        button_2.grid(row=5, column=1)
-        button_3.grid(row=5, column=2)
-        button_plus.grid(row=5, column=3)
-
-        button_4.grid(row=4, column=0)
-        button_5.grid(row=4, column=1)
-        button_6.grid(row=4, column=2)
-        button_minus.grid(row=4, column=3)
-
-        button_7.grid(row=3, column=0)
-        button_8.grid(row=3, column=1)
-        button_9.grid(row=3, column=2)
-        button_factorial.grid(row=3, column=3)
-
-        button_2nd.grid(row=6, column=0)
-        button_0.grid(row=6, column=1)
-        button_decimal.grid(row=6, column=2)
-        button_equal.grid(row=6, column=3)
-
-        button_temp_page.grid(row=1, column=0, columnspan=2)
-        button_currency_page.grid(row=1, column=2, columnspan=2)
-
-        button_settings_page.grid(row=0, column=0)
-
-        def factorial():
-            print("h")
-
-        def sin():
-            print('h')
-
-        def cos():
-            print('h')
-
-        def tan():
-            print('h')
-
-
 class settings_page(tk.Frame):
     # page that handles settings
     def __init__(self, parent, controller):
-
+        self.control = Controller()
         tk.Frame.__init__(self, parent)
         label = ttk.Label(self, text="Settings", font=LARGEFONT)
 
@@ -351,11 +340,23 @@ class settings_page(tk.Frame):
 
         main_page_button.grid(row=1, column=3, padx=10, pady=10)
 
-        degrees_button = ttk.Button(self, text="Degrees")
-        radians_button = ttk.Button(self, text="Radians")
+        def degree_push():
+            if not self.control.degrees:
+                self.control.degrees = True
+                degrees_button.config(relief=SUNKEN, bg="green")
+                radians_button.config(relief=RAISED, bg="gray")
 
-        degrees_button.grid(row=2, column=0, columnspan=2)
-        radians_button.grid(row=2, column=2, columnspan=2)
+        def radian_push():
+            if self.control.degrees:
+                self.control.degrees = False
+                degrees_button.config(relief=RAISED, bg="gray")
+                radians_button.config(relief=SUNKEN, bg="green")
+
+        degrees_button = Button(self, text="Degrees", relief=SUNKEN, height=5, width=20, bg="green", command=lambda: degree_push())
+        radians_button = Button(self, text="Radians", relief=RAISED, height=5, width=20, bg="gray", command=lambda: radian_push())
+
+        degrees_button.grid(row=2, column=0, columnspan=2, rowspan=2)
+        radians_button.grid(row=2, column=2, columnspan=2, rowspan=2)
 
 
 class temperature_page(tk.Frame):
