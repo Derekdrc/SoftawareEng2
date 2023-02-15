@@ -8,6 +8,7 @@ from tkinter import *
 from tkinter import ttk
 import math
 import os
+from currency_converter import CurrencyConverter
 
 LARGEFONT = ("Verdana", 24)
 
@@ -491,6 +492,10 @@ class currency_page(tk.Frame):
         tk.Frame.__init__(self, parent)
         label = ttk.Label(self, text="Currency Exchange", font=LARGEFONT)
 
+        # currency converter object
+        c = CurrencyConverter()
+        curr_set = c.currencies
+
         # putting the grid in its place by using
         # grid
         label.grid(row=0, column=0, columnspan=4, padx=10, pady=10)
@@ -517,15 +522,19 @@ class currency_page(tk.Frame):
         main_page_button.grid(row=1, column=2, padx=10, pady=10)
 
         def button_calculate():
-            ...
+            money_entered = float(user_input_box.get())
+            conversion = round(c.convert(money_entered, first_clicked.get(), second_clicked.get()), 2)
+            display_box.config(text=str(conversion))
 
         # create dropdowns for choosing currency conversions
         options = [
-            "US Dollar",
-            "Pound",
-            "Yen",
-            "Cad",
-            "BTC"
+            "USD",
+            "EUR",
+            "AUD",
+            "CAD",
+            "GBP",
+            "DKK",
+            "RUB"
         ]
 
         user_input_box = Entry(self, width=15, borderwidth=5, font=('Arial', 10))
@@ -536,7 +545,7 @@ class currency_page(tk.Frame):
         first_drop_menu = OptionMenu(self, first_clicked, *options)
         first_drop_menu.grid(row=2, column=1)
 
-        display_box = Entry(self, width=15, borderwidth=5, font=('Arial', 10), state=tk.DISABLED)
+        display_box = Label(self, width=15, borderwidth=5, relief=RIDGE, font=('Arial', 10))
         display_box.grid(row=2, column=2, padx=0)
 
         second_clicked = StringVar()
