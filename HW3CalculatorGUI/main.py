@@ -19,6 +19,12 @@ class Controller:
         self.absolute_path = os.path.dirname(__file__)
         self.second = False
 
+    def checkDegrees(self):
+        if self.degrees:
+            return True
+        else:
+            return False
+
 
 class page_container(tk.Tk):
     # __init__ function for class tkinterApp
@@ -39,7 +45,7 @@ class page_container(tk.Tk):
 
         # iterating through a tuple consisting
         # of the different page layouts
-        for F, geometry in zip((main_page, settings_page, temperature_page, currency_page), ('440x460', '450x200', '450x200', '450x200')):
+        for F, geometry in zip((main_page, settings_page, temperature_page, currency_page), ('440x460', '450x200', '450x200', '500x200')):
             page_name = F.__name__
             frame = F(parent=container, controller=self)
 
@@ -161,12 +167,9 @@ class main_page(tk.Frame):
             e.delete(0, END)
             e.insert(0, str(box) + '.')
 
-        def factorial():
-            print("h")
-
         def button_sin():
             box = e.get()
-            if self.control.degrees == False:
+            if deg_rad == False:
                 e.delete(0, END)
                 e.insert(0, str(round(math.sin(float(box)), 3)))
             else:
@@ -175,7 +178,7 @@ class main_page(tk.Frame):
 
         def button_cos():
             box = e.get()
-            if self.control.degrees == False:
+            if deg_rad == False:
                 e.delete(0, END)
                 e.insert(0, str(round(math.cos(float(box)), 3)))
             else:
@@ -184,7 +187,7 @@ class main_page(tk.Frame):
 
         def button_tan():
             box = e.get()
-            if self.control.degrees == False:
+            if deg_rad == False:
                 e.delete(0, END)
                 e.insert(0, str(round(math.tan(float(box)), 3)))
             else:
@@ -193,11 +196,15 @@ class main_page(tk.Frame):
 
         def button_factorial():
             box = e.get()
-            if float(box) >= 0:
-                num = int(box)
-                e.delete(0, END)
-                e.insert(0, str(math.factorial(num)))
-            else:
+            try:
+                if float(box) >= 0:
+                    num = int(box)
+                    e.delete(0, END)
+                    e.insert(0, str(math.factorial(num)))
+                else:
+                    e.delete(0, END)
+                    e.insert(0, "ERROR")
+            except:
                 e.delete(0, END)
                 e.insert(0, "ERROR")
 
@@ -215,9 +222,9 @@ class main_page(tk.Frame):
                 button_8.config(bg='gray', command=lambda: do_nothing)
                 button_9.config(bg='gray', command=lambda: do_nothing)
                 button_0.config(bg='gray', command=lambda: do_nothing)
-                button_log_sin.config(bg='red', text="Sin", command=lambda: button_sin())
-                button_sqrt_cos.config(bg='red', text="Cos", command=lambda: button_cos())
-                button_divide_tan.config(bg='red', text="Tan", command=lambda: button_tan())
+                button_log_sin.config(bg='red', text="S", command=lambda: button_sin())
+                button_sqrt_cos.config(bg='red', text="C", command=lambda: button_cos())
+                button_divide_tan.config(bg='red', text="T", command=lambda: button_tan())
                 button_multiply_factorial.config(bg='red', text="!", command=lambda: button_factorial())
                 button_2nd.config(bg='red', fg='black')
             else:
@@ -340,17 +347,24 @@ class settings_page(tk.Frame):
 
         main_page_button.grid(row=1, column=3, padx=10, pady=10)
 
+        global deg_rad
+        deg_rad = True
+
         def degree_push():
             if not self.control.degrees:
                 self.control.degrees = True
                 degrees_button.config(relief=SUNKEN, bg="green")
                 radians_button.config(relief=RAISED, bg="gray")
+                global deg_rad
+                deg_rad = True
 
         def radian_push():
             if self.control.degrees:
                 self.control.degrees = False
                 degrees_button.config(relief=RAISED, bg="gray")
                 radians_button.config(relief=SUNKEN, bg="green")
+                global deg_rad
+                deg_rad = False
 
         degrees_button = Button(self, text="Degrees", relief=SUNKEN, height=5, width=20, bg="green", command=lambda: degree_push())
         radians_button = Button(self, text="Radians", relief=RAISED, height=5, width=20, bg="gray", command=lambda: radian_push())
@@ -490,6 +504,9 @@ class currency_page(tk.Frame):
 
         main_page_button.grid(row=1, column=2, padx=10, pady=10)
 
+        def button_calculate():
+            ...
+
         # create dropdowns for choosing currency conversions
         options = [
             "US Dollar",
@@ -515,7 +532,7 @@ class currency_page(tk.Frame):
         displayed_drop_menu = OptionMenu(self, second_clicked, *options)
         displayed_drop_menu.grid(row=2, column=3, padx=0)
 
-        calculate_button = ttk.Button(self, text="Calculate")
+        calculate_button = ttk.Button(self, text="Calculate", command=lambda: button_calculate())
         calculate_button.grid(row=3, column=0, columnspan=4)
 
 
@@ -526,8 +543,8 @@ root.mainloop()
 
 # notes:
 # pictures for degrees, currencys
-# fix settings page
-# implement rest of math via second
+# fix settings page DONE
+# implement rest of math via second DONE
 # fix user input when they type divide by 0 DONE
 #
 #
