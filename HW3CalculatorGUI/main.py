@@ -140,13 +140,16 @@ class main_page(tk.Frame):
             e.delete(0, END)
 
             if Math == "add":
-                e.insert(0, f_num + float(second_number))
+                add_string = str(f_num + float(second_number))
+                e.insert(0, add_string)
 
             elif Math == "subtract":
-                e.insert(0, f_num - float(second_number))
+                subtract_string = str(f_num - float(second_number))
+                e.insert(0, subtract_string)
 
             elif Math == "multiply":
-                e.insert(0, f_num * float(second_number))
+                multiply_string = str(f_num * float(second_number))
+                e.insert(0, multiply_string)
 
             elif Math == "divide":
                 if (second_number == '0' or second_number == ''):
@@ -291,7 +294,7 @@ class main_page(tk.Frame):
 
         button_temp_page = Button(self, text="Temperature", padx=40, pady=20, bg="firebrick4", fg="turquoise1", command=lambda: controller.show_frame("temperature_page"))
         button_settings_page = Button(self, image=settings_photo_sub, padx=40, pady=20, bg='white', command=lambda: controller.show_frame("settings_page"))
-        button_settings_page.image = settings_photo_sub  # keep a reference or smth so that button actually show img??? no clue why but this line is necessary
+        button_settings_page.image = settings_photo_sub  # type: ignore # keep a reference or smth so that button actually show img??? no clue why but this line is necessary
         button_currency_page = Button(self, text="Currency Exchange", padx=40, pady=20, bg="darkgreen", fg="white", command=lambda: controller.show_frame("currency_page"))
 
         # display buttons
