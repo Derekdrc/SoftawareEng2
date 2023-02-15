@@ -45,7 +45,7 @@ class page_container(tk.Tk):
 
         # iterating through a tuple consisting
         # of the different page layouts
-        for F, geometry in zip((main_page, settings_page, temperature_page, currency_page), ('440x460', '450x200', '450x200', '500x200')):
+        for F, geometry in zip((main_page, settings_page, temperature_page, currency_page), ('450x465', '410x200', '450x200', '500x200')):
             page_name = F.__name__
             frame = F(parent=container, controller=self)
 
@@ -75,8 +75,9 @@ class main_page(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         self.control = Controller()
+        self.config(bg="blue")
 
-        def button_clear():
+        def button_clear_click():
             e.delete(0, END)
             if not self.control.second:
                 button_0.configure(bg='cyan', command=lambda: button_click(0))
@@ -208,6 +209,8 @@ class main_page(tk.Frame):
                 e.delete(0, END)
                 e.insert(0, "ERROR")
 
+        # handles pressing the second button to toggle "pages"
+
         def second_button_click():
             if not self.control.second:
                 self.control.second = True
@@ -222,9 +225,13 @@ class main_page(tk.Frame):
                 button_8.config(bg='gray', command=lambda: do_nothing)
                 button_9.config(bg='gray', command=lambda: do_nothing)
                 button_0.config(bg='gray', command=lambda: do_nothing)
-                button_log_sin.config(bg='red', text="S", command=lambda: button_sin())
-                button_sqrt_cos.config(bg='red', text="C", command=lambda: button_cos())
-                button_divide_tan.config(bg='red', text="T", command=lambda: button_tan())
+                button_plus.config(bg='gray', command=lambda: do_nothing)
+                button_minus.config(bg='gray', command=lambda: do_nothing)
+                button_decimal_point.config(bg='gray', command=lambda: do_nothing)
+                button_equal_sign.config(bg='gray', command=lambda: do_nothing)
+                button_log_sin.config(bg='red', text="Sin", command=lambda: button_sin())
+                button_sqrt_cos.config(bg='red', text="Cos", command=lambda: button_cos())
+                button_divide_tan.config(bg='red', text="Tan", command=lambda: button_tan())
                 button_multiply_factorial.config(bg='red', text="!", command=lambda: button_factorial())
                 button_2nd.config(bg='red', fg='black')
             else:
@@ -239,48 +246,52 @@ class main_page(tk.Frame):
                 button_7.config(bg='cyan', command=lambda: button_click(7))
                 button_8.config(bg='cyan', command=lambda: button_click(8))
                 button_9.config(bg='cyan', command=lambda: button_click(9))
-                button_log_sin.config(bg='white', text="log", command=lambda: button_log())
-                button_sqrt_cos.config(bg='white', text="\u221a", command=lambda: button_sqrt())
-                button_divide_tan.config(bg='white', text="/", command=lambda: button_divide())
-                button_multiply_factorial.config(bg='white', text="*", command=lambda: button_multiply())
-                button_2nd.config(bg='white', fg='red')
+                button_plus.config(bg='plum2', command=lambda: button_add)
+                button_minus.config(bg='plum2', command=lambda: button_subtract)
+                button_decimal_point.config(bg='plum2', command=lambda: button_decimal)
+                button_equal_sign.config(bg='plum2', command=lambda: button_equal)
+                button_log_sin.config(bg='plum2', text="log", command=lambda: button_log())
+                button_sqrt_cos.config(bg='plum2', text="\u221a", command=lambda: button_sqrt())
+                button_divide_tan.config(bg='plum2', text="/", command=lambda: button_divide())
+                button_multiply_factorial.config(bg='plum2', text="*", command=lambda: button_multiply())
+                button_2nd.config(bg='green', fg='red')
 
         # images
         settings_img_path = os.path.join(self.control.absolute_path, 'images/settings.png')
         settings_photo = PhotoImage(file=settings_img_path)
         settings_photo_sub = settings_photo.subsample(3, 3)
 
-        e = Entry(self, width=15, borderwidth=5, font=('Arial', 24))
+        e = Entry(self, width=15, borderwidth=5, bg="peachpuff", font=('Arial', 24))
         e.grid(row=0, column=1, columnspan=5, padx=10, pady=10)
 
         # define buttons
 
-        button_1 = Button(self, text="1", bg='cyan', padx=40, pady=20, command=lambda: button_click(1))
-        button_2 = Button(self, text="2", bg='cyan', padx=40, pady=20, command=lambda: button_click(2))
-        button_3 = Button(self, text="3", bg='cyan', padx=40, pady=20, command=lambda: button_click(3))
-        button_4 = Button(self, text="4", bg='cyan', padx=40, pady=20, command=lambda: button_click(4))
-        button_5 = Button(self, text="5", bg='cyan', padx=40, pady=20, command=lambda: button_click(5))
-        button_6 = Button(self, text="6", bg='cyan', padx=40, pady=20, command=lambda: button_click(6))
-        button_7 = Button(self, text="7", bg='cyan', padx=40, pady=20, command=lambda: button_click(7))
-        button_8 = Button(self, text="8", bg='cyan', padx=40, pady=20, command=lambda: button_click(8))
-        button_9 = Button(self, text="9", bg='cyan', padx=40, pady=20, command=lambda: button_click(9))
-        button_0 = Button(self, text="0", bg='cyan', padx=40, pady=20, command=lambda: button_click(0))
+        button_1 = Button(self, text="1", bg='cyan', padx=40, pady=20, width=3, command=lambda: button_click(1))
+        button_2 = Button(self, text="2", bg='cyan', padx=40, pady=20, width=3, command=lambda: button_click(2))
+        button_3 = Button(self, text="3", bg='cyan', padx=40, pady=20, width=3, command=lambda: button_click(3))
+        button_4 = Button(self, text="4", bg='cyan', padx=40, pady=20, width=3, command=lambda: button_click(4))
+        button_5 = Button(self, text="5", bg='cyan', padx=40, pady=20, width=3, command=lambda: button_click(5))
+        button_6 = Button(self, text="6", bg='cyan', padx=40, pady=20, width=3, command=lambda: button_click(6))
+        button_7 = Button(self, text="7", bg='cyan', padx=40, pady=20, width=3, command=lambda: button_click(7))
+        button_8 = Button(self, text="8", bg='cyan', padx=40, pady=20, width=3, command=lambda: button_click(8))
+        button_9 = Button(self, text="9", bg='cyan', padx=40, pady=20, width=3, command=lambda: button_click(9))
+        button_0 = Button(self, text="0", bg='cyan', padx=40, pady=20, width=3, command=lambda: button_click(0))
 
-        button_decimal = Button(self, text=".", padx=40, pady=20, command=button_decimal)
-        button_clear = Button(self, text="Clear", padx=40, pady=20, command=button_clear)
-        button_equal = Button(self, text="=", padx=40, pady=20, command=button_equal)
-        button_2nd = Button(self, text="2nd", fg='#f00', padx=40, pady=20, command=second_button_click)
-        button_plus = Button(self, text="+", padx=40, pady=20, command=button_add)
-        button_minus = Button(self, text="-", padx=40, pady=20, command=button_subtract)
-        button_multiply_factorial = Button(self, text="*", padx=40, pady=20, command=button_multiply)
-        button_divide_tan = Button(self, text="/", padx=40, pady=20, command=button_divide)
-        button_log_sin = Button(self, text="log", padx=40, pady=20, command=button_log)
-        button_sqrt_cos = Button(self, text="\u221a", padx=40, pady=20, command=button_sqrt)
+        button_decimal_point = Button(self, text=".", padx=40, pady=20, width=3, bg="plum2", command=button_decimal)
+        button_clear = Button(self, text="Clear", padx=40, pady=20, fg="magenta", bg="black", command=button_clear_click)
+        button_equal_sign = Button(self, text="=", padx=40, pady=20, width=3, bg="plum2", command=button_equal)
+        button_2nd = Button(self, text="2nd", font=" arial 12 bold", fg='red', bg="green", padx=40, pady=17, command=second_button_click)
+        button_plus = Button(self, text="+", padx=40, pady=20, width=3, bg="plum2", command=button_add)
+        button_minus = Button(self, text="-", padx=40, pady=20, width=3, bg="plum2", command=button_subtract)
+        button_multiply_factorial = Button(self, text="*", padx=40, width=3, pady=20, bg="plum2", command=button_multiply)
+        button_divide_tan = Button(self, text="/", padx=40, pady=20, width=3, bg="plum2", command=button_divide)
+        button_log_sin = Button(self, text="log", padx=40, pady=20, bg="plum2", command=button_log)
+        button_sqrt_cos = Button(self, text="\u221a", padx=40, pady=20, width=3, bg="plum2", command=button_sqrt)
 
-        button_temp_page = Button(self, text="Temperature", padx=40, pady=20,  command=lambda: controller.show_frame("temperature_page"))
+        button_temp_page = Button(self, text="Temperature", padx=40, pady=20, bg="firebrick4", fg="turquoise1", command=lambda: controller.show_frame("temperature_page"))
         button_settings_page = Button(self, image=settings_photo_sub, padx=40, pady=20, bg='white', command=lambda: controller.show_frame("settings_page"))
         button_settings_page.image = settings_photo_sub  # keep a reference or smth so that button actually show img??? no clue why but this line is necessary
-        button_currency_page = Button(self, text="Currency Exchange", padx=40, pady=20,  command=lambda: controller.show_frame("currency_page"))
+        button_currency_page = Button(self, text="Currency Exchange", padx=40, pady=20, bg="darkgreen", fg="white", command=lambda: controller.show_frame("currency_page"))
 
         # display buttons
 
@@ -306,8 +317,8 @@ class main_page(tk.Frame):
 
         button_2nd.grid(row=6, column=0, pady=5)
         button_0.grid(row=6, column=1)
-        button_decimal.grid(row=6, column=2)
-        button_equal.grid(row=6, column=3)
+        button_decimal_point.grid(row=6, column=2)
+        button_equal_sign.grid(row=6, column=3)
 
         button_temp_page.grid(row=1, column=0, columnspan=2)
         button_currency_page.grid(row=1, column=2, columnspan=2)
@@ -320,11 +331,12 @@ class settings_page(tk.Frame):
     def __init__(self, parent, controller):
         self.control = Controller()
         tk.Frame.__init__(self, parent)
-        label = ttk.Label(self, text="Settings", font=LARGEFONT)
+        label = ttk.Label(self, text="Settings", font=LARGEFONT, justify=CENTER, background="yellow")
+        self.config(bg="yellow")
 
         # putting the grid in its place by using
         # grid
-        label.grid(row=0, column=0, columnspan=4, padx=10, pady=10)
+        label.grid(row=0, column=0, columnspan=5, padx=10, pady=10)
 
         temperature_button = ttk.Button(self, text="Temperature Conversion",
                                         command=lambda: controller.show_frame("temperature_page"))
