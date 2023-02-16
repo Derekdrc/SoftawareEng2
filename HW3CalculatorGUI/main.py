@@ -136,29 +136,41 @@ class main_page(tk.Frame):
             e.delete(0, END)
 
         def button_equal():
-            second_number = e.get()
-            e.delete(0, END)
-
-            if Math == "add":
-                add_string = str(f_num + float(second_number))
-                e.insert(0, add_string)
-
-            elif Math == "subtract":
-                subtract_string = str(f_num - float(second_number))
-                e.insert(0, subtract_string)
-
-            elif Math == "multiply":
-                multiply_string = str(f_num * float(second_number))
-                e.insert(0, multiply_string)
-
-            elif Math == "divide":
-                if (second_number == '0' or second_number == ''):
-                    e.insert(0, "ERROR: Div by 0",)
+            try:
+                f_num
+            except NameError:
+                e.delete(0, END)
+                e.insert(0, "ERROR")
+            else:
+                second_number = e.get()
+                e.delete(0, END)
+                if str(f_num) == '':
+                    e.delete(0, END)
+                    e.insert(0, "ERROR")
+                elif second_number == '':
+                    e.delete(0, END)
+                    e.insert(0, "ERROR")
                 else:
-                    e.insert(0, str(round(f_num / float(second_number), 6)))
-            elif Math == "log":
-                ans = round(math.log(f_num, float(second_number)), 3)
-                e.insert(0, str(ans))
+                    if Math == "add":
+                        add_string = str(f_num + float(second_number))
+                        e.insert(0, add_string)
+
+                    elif Math == "subtract":
+                        subtract_string = str(f_num - float(second_number))
+                        e.insert(0, subtract_string)
+
+                    elif Math == "multiply":
+                        multiply_string = str(f_num * float(second_number))
+                        e.insert(0, multiply_string)
+
+                    elif Math == "divide":
+                        if (second_number == '0' or second_number == ''):
+                            e.insert(0, "ERROR: Div by 0",)
+                        else:
+                            e.insert(0, str(round(f_num / float(second_number), 6)))
+                    elif Math == "log":
+                        ans = round(math.log(f_num, float(second_number)), 3)
+                        e.insert(0, str(ans))
 
         def button_click(num):
             if (num in (1, 2, 3, 4, 5, 6, 7, 8, 9)):
@@ -266,7 +278,7 @@ class main_page(tk.Frame):
         settings_photo_sub = settings_photo.subsample(3, 3)
 
         e = Entry(self, width=15, borderwidth=5, bg="peachpuff", font=('Arial', 24))
-        e.grid(row=0, column=1, columnspan=5, padx=10, pady=10)
+        e.grid(row=0, column=1, columnspan=3, padx=10, pady=10)
 
         # define buttons
 
@@ -293,41 +305,54 @@ class main_page(tk.Frame):
         button_sqrt_cos = Button(self, text="\u221a", padx=40, pady=20, width=3, bg="plum2", command=button_sqrt)
 
         button_temp_page = Button(self, text="Temperature", padx=40, pady=20, bg="firebrick4", fg="turquoise1", command=lambda: controller.show_frame("temperature_page"))
-        button_settings_page = Button(self, image=settings_photo_sub, padx=40, pady=20, bg='white', command=lambda: controller.show_frame("settings_page"))
+        button_settings_page = Button(self, image=settings_photo_sub, padx=40, pady=20, bg='blue', command=lambda: controller.show_frame("settings_page"))
         button_settings_page.image = settings_photo_sub  # type: ignore # keep a reference or smth so that button actually show img??? no clue why but this line is necessary
         button_currency_page = Button(self, text="Currency Exchange", padx=40, pady=20, bg="#168118", fg="white", command=lambda: controller.show_frame("currency_page"))
 
+        self.grid_rowconfigure(0, weight=1)
+        self.grid_rowconfigure(1, weight=1)
+        self.grid_rowconfigure(2, weight=1)
+        self.grid_rowconfigure(3, weight=1)
+        self.grid_rowconfigure(4, weight=1)
+        self.grid_rowconfigure(5, weight=1)
+        self.grid_rowconfigure(6, weight=1)
+
+        self.grid_columnconfigure(0, weight=1)
+        self.grid_columnconfigure(1, weight=1)
+        self.grid_columnconfigure(2, weight=1)
+        self.grid_columnconfigure(3, weight=1)
+
         # display buttons
 
-        button_clear.grid(row=2, column=0)
-        button_log_sin.grid(row=2, column=1)
-        button_sqrt_cos.grid(row=2, column=2)
-        button_divide_tan.grid(row=2, column=3)
+        button_clear.grid(row=2, column=0, sticky=NSEW)
+        button_log_sin.grid(row=2, column=1, sticky=NSEW)
+        button_sqrt_cos.grid(row=2, column=2, sticky=NSEW)
+        button_divide_tan.grid(row=2, column=3, sticky=NSEW)
 
-        button_1.grid(row=5, column=0)
-        button_2.grid(row=5, column=1)
-        button_3.grid(row=5, column=2)
-        button_plus.grid(row=5, column=3)
+        button_1.grid(row=5, column=0, sticky=NSEW)
+        button_2.grid(row=5, column=1, sticky=NSEW)
+        button_3.grid(row=5, column=2, sticky=NSEW)
+        button_plus.grid(row=5, column=3, sticky=NSEW)
 
-        button_4.grid(row=4, column=0)
-        button_5.grid(row=4, column=1)
-        button_6.grid(row=4, column=2)
-        button_minus.grid(row=4, column=3)
+        button_4.grid(row=4, column=0, sticky=NSEW)
+        button_5.grid(row=4, column=1, sticky=NSEW)
+        button_6.grid(row=4, column=2, sticky=NSEW)
+        button_minus.grid(row=4, column=3, sticky=NSEW)
 
-        button_7.grid(row=3, column=0)
-        button_8.grid(row=3, column=1)
-        button_9.grid(row=3, column=2)
-        button_multiply_factorial.grid(row=3, column=3)
+        button_7.grid(row=3, column=0, sticky=NSEW)
+        button_8.grid(row=3, column=1, sticky=NSEW)
+        button_9.grid(row=3, column=2, sticky=NSEW)
+        button_multiply_factorial.grid(row=3, column=3, sticky=NSEW)
 
-        button_2nd.grid(row=6, column=0, pady=5)
-        button_0.grid(row=6, column=1)
-        button_decimal_point.grid(row=6, column=2)
-        button_equal_sign.grid(row=6, column=3)
+        button_2nd.grid(row=6, column=0, sticky=NSEW)
+        button_0.grid(row=6, column=1, sticky=NSEW)
+        button_decimal_point.grid(row=6, column=2, sticky=NSEW)
+        button_equal_sign.grid(row=6, column=3, sticky=NSEW)
 
-        button_temp_page.grid(row=1, column=0, columnspan=2)
-        button_currency_page.grid(row=1, column=2, columnspan=2)
+        button_temp_page.grid(row=1, column=0, columnspan=2, sticky=NSEW)
+        button_currency_page.grid(row=1, column=2, columnspan=2, sticky=NSEW)
 
-        button_settings_page.grid(row=0, column=0)
+        button_settings_page.grid(row=0, column=0, sticky=NSEW)
 
 
 class settings_page(tk.Frame):
