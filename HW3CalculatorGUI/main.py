@@ -10,7 +10,7 @@ import math
 import os
 from currency_converter import CurrencyConverter
 
-LARGEFONT = ("Verdana", 24)
+LARGEFONT = ("Verdana", 24, "bold")
 
 
 class Controller:
@@ -46,7 +46,7 @@ class page_container(tk.Tk):
 
         # iterating through a tuple consisting
         # of the different page layouts
-        for F, geometry in zip((main_page, settings_page, temperature_page, currency_page), ('450x465', '410x200', '450x200', '500x200')):
+        for F, geometry in zip((main_page, settings_page, temperature_page, currency_page), ('455x465', '410x200', '510x200', '500x190')):
             page_name = F.__name__
             frame = F(parent=container, controller=self)
 
@@ -295,7 +295,7 @@ class main_page(tk.Frame):
         button_temp_page = Button(self, text="Temperature", padx=40, pady=20, bg="firebrick4", fg="turquoise1", command=lambda: controller.show_frame("temperature_page"))
         button_settings_page = Button(self, image=settings_photo_sub, padx=40, pady=20, bg='white', command=lambda: controller.show_frame("settings_page"))
         button_settings_page.image = settings_photo_sub  # type: ignore # keep a reference or smth so that button actually show img??? no clue why but this line is necessary
-        button_currency_page = Button(self, text="Currency Exchange", padx=40, pady=20, bg="darkgreen", fg="white", command=lambda: controller.show_frame("currency_page"))
+        button_currency_page = Button(self, text="Currency Exchange", padx=40, pady=20, bg="#168118", fg="white", command=lambda: controller.show_frame("currency_page"))
 
         # display buttons
 
@@ -394,11 +394,15 @@ class temperature_page(tk.Frame):
     def __init__(self, parent, controller):
 
         tk.Frame.__init__(self, parent)
-        label = ttk.Label(self, text="Temperature Conversion", font=('Arial', 20), anchor="center")
+        self.config(bg="firebrick4")
+        label = ttk.Label(self, text="Temperature Conversion", font=LARGEFONT, anchor="center", background="firebrick4", foreground="turquoise1")
+        entryFrame = tk.Frame(self)
+        entryFrame.config(background="firebrick4")
+        self.control = Controller()
 
         # putting the grid in its place by using
         # grid
-        label.grid(row=0, column=0, columnspan=4, padx=10, pady=10, sticky=E+W+N+S)
+        label.grid(row=0, column=0, columnspan=3, padx=10, pady=10, sticky=E+W+N+S)
 
         settings_button = ttk.Button(self, text="Settings",
                                      command=lambda: controller.show_frame("settings_page"))
@@ -421,10 +425,6 @@ class temperature_page(tk.Frame):
 
         main_page_button.grid(row=1, column=2, padx=10, pady=10)
 
-        # config page size and format
-        self.rowconfigure(0, weight=1)
-        self.columnconfigure(0, weight=1)
-
         # create dropdowns for choosing temp conversions
         options = [
             "Farenheit",
@@ -432,21 +432,43 @@ class temperature_page(tk.Frame):
             "Kelvin",
         ]
 
-        user_input_box = Entry(self, width=15, borderwidth=5, font=('Arial', 10))
-        user_input_box.grid(row=2, column=0)
+        # images
+        thermometer_path = os.path.join(self.control.absolute_path, 'images/thermometer.png')
+        thermometer_photo = PhotoImage(file=thermometer_path)
+        thermometer_photo_sub = thermometer_photo.subsample(10, 10)
+
+        thermometer_label = Label(entryFrame, image=thermometer_photo_sub, padx=10, pady=20, bg='white')
+        thermometer_label_2 = Label(entryFrame, image=thermometer_photo_sub, padx=10, pady=20, bg='white')
+        thermometer_label.image = thermometer_photo_sub  # type: ignore # keep a reference or smth so that button actually show img??? no clue why but this line is necessary
+
+        degree_label = Label(entryFrame, text="\N{DEGREE SIGN}", font="Arial 24 bold", bg="firebrick4")
+        degree_label_2 = Label(entryFrame, text="\N{DEGREE SIGN}", font="Arial 24 bold", bg="firebrick4")
+
+        thermometer_label.pack(side="left", padx=5)
+
+        user_input_box = Entry(entryFrame, width=15, borderwidth=5, font=('Arial', 10))
+        user_input_box.pack(side="left", padx=0)
+
+        degree_label.pack(side="left")
 
         first_clicked = StringVar()
         first_clicked.set("Temp")
-        first_drop_menu = OptionMenu(self, first_clicked, *options)
-        first_drop_menu.grid(row=2, column=1)
+        first_drop_menu = OptionMenu(entryFrame, first_clicked, *options)
+        first_drop_menu.pack(side="left", padx=5)
 
-        display_box = Label(self, width=15, borderwidth=5, font=('Arial', 10), relief=RIDGE)
-        display_box.grid(row=2, column=2)
+        thermometer_label_2.pack(side="left", padx=5)
+
+        display_box = Label(entryFrame, width=15, borderwidth=5, font=('Arial', 10), relief=RIDGE)
+        display_box.pack(side="left", padx=0)
+
+        degree_label_2.pack(side="left")
 
         second_clicked = StringVar()
         second_clicked.set("Temp")
-        displayed_drop_menu = OptionMenu(self, second_clicked, *options)
-        displayed_drop_menu.grid(row=2, column=3)
+        displayed_drop_menu = OptionMenu(entryFrame, second_clicked, *options)
+        displayed_drop_menu.pack(side="left", padx=0)
+
+        entryFrame.grid(row=2, column=0, columnspan=3)
 
         calculate_button = ttk.Button(self, text="Calculate", command=lambda: calculate())
         calculate_button.grid(row=3, column=0, columnspan=4, pady=10)
@@ -493,7 +515,13 @@ class currency_page(tk.Frame):
     def __init__(self, parent, controller):
 
         tk.Frame.__init__(self, parent)
-        label = ttk.Label(self, text="Currency Exchange", font=LARGEFONT)
+        label = ttk.Label(self, text="Curren\xa2y Exchange", font=LARGEFONT, background="#168118", foreground="white")
+        entryFrame = tk.Frame(self)
+        entryFrame.config(bg="#168118")
+
+        self.config(bg="#168118")
+
+        self.control = Controller()
 
         # currency converter object
         c = CurrencyConverter()
@@ -524,6 +552,15 @@ class currency_page(tk.Frame):
 
         main_page_button.grid(row=1, column=2, padx=10, pady=10)
 
+        # images
+        dollar_sign_img_path = os.path.join(self.control.absolute_path, 'images/dollar_sign.png')
+        dollar_sign_photo = PhotoImage(file=dollar_sign_img_path)
+        dollar_sign_photo_sub = dollar_sign_photo.subsample(10, 10)
+
+        dollar_sign_label = Label(entryFrame, image=dollar_sign_photo_sub, padx=10, pady=20, bg='#168118')
+        dolar_sign_label_2 = Label(entryFrame, image=dollar_sign_photo_sub, padx=10, pady=20, bg='#168118')
+        dollar_sign_label.image = dollar_sign_photo_sub  # type: ignore # keep a reference or smth so that button actually show img??? no clue why but this line is necessary
+
         def button_calculate():
             money_entered = float(user_input_box.get())
             conversion = round(c.convert(money_entered, first_clicked.get(), second_clicked.get()), 2)
@@ -540,21 +577,27 @@ class currency_page(tk.Frame):
             "RUB"
         ]
 
-        user_input_box = Entry(self, width=15, borderwidth=5, font=('Arial', 10))
-        user_input_box.grid(row=2, column=0)
+        dollar_sign_label.pack(side="left", padx=5)
+
+        user_input_box = Entry(entryFrame, width=15, borderwidth=5, font=('Arial', 10))
+        user_input_box.pack(side="left", padx=5)
 
         first_clicked = StringVar()
-        first_clicked.set("Currency")
-        first_drop_menu = OptionMenu(self, first_clicked, *options)
-        first_drop_menu.grid(row=2, column=1)
+        first_clicked.set("USD")
+        first_drop_menu = OptionMenu(entryFrame, first_clicked, *options)
+        first_drop_menu.pack(side="left", padx=5)
 
-        display_box = Label(self, width=15, borderwidth=5, relief=RIDGE, font=('Arial', 10))
-        display_box.grid(row=2, column=2, padx=0)
+        dolar_sign_label_2.pack(side="left")
+
+        display_box = Label(entryFrame, width=15, borderwidth=5, relief=RIDGE, font=('Arial', 10))
+        display_box.pack(side="left", padx=5)
 
         second_clicked = StringVar()
-        second_clicked.set("Currency")
-        displayed_drop_menu = OptionMenu(self, second_clicked, *options)
-        displayed_drop_menu.grid(row=2, column=3, padx=0)
+        second_clicked.set("USD")
+        displayed_drop_menu = OptionMenu(entryFrame, second_clicked, *options)
+        displayed_drop_menu.pack(side="left", padx=5)
+
+        entryFrame.grid(row=2, column=0, columnspan=3)
 
         calculate_button = ttk.Button(self, text="Calculate", command=lambda: button_calculate())
         calculate_button.grid(row=3, column=0, columnspan=4)
