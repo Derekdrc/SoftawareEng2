@@ -46,7 +46,7 @@ class page_container(tk.Tk):
 
         # iterating through a tuple consisting
         # of the different page layouts
-        for F, geometry in zip((main_page, settings_page, temperature_page, currency_page), ('455x465', '410x200', '510x200', '500x190')):
+        for F, geometry in zip((main_page, settings_page, temperature_page, currency_page), ('455x465', '410x200', '550x200', '500x190')):
             page_name = F.__name__
             frame = F(parent=container, controller=self)
 
