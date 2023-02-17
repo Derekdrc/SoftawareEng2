@@ -76,7 +76,7 @@ class main_page(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         self.control = Controller()
-        self.config(bg="blue")
+        self.config(bg="blue", padx=5, pady=5)
 
         def button_clear_click():
             e.delete(0, END)
@@ -634,7 +634,7 @@ root.mainloop()
 
 
 # notes:
-# pictures for degrees, currencys
+# pictures for degrees, currency DONE
 # fix settings page DONE
 # implement rest of math via second DONE
 # fix user input when they type divide by 0 DONE
