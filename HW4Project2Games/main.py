@@ -25,8 +25,9 @@ class Controller_Class:
     def __init__(self):
         self.absolute_path = os.path.dirname(__file__)
 
-        self.bold_font = ("Arial", 16, "bold")
-        self.large_font = ("Arial", 12)
+        self.bold_font = ("Arial", 20, "bold")
+        self.large_font = ("Arial", 16)
+        self.normal_font = ("Arial", 12)
 
         self.rps_player_One_Choice = -1
         self.rps_player_Two_Choice = -1
@@ -58,7 +59,7 @@ class Page_Container(tk.Tk):
 
         # iterating through a tuple consisting
         # of the different page layouts
-        for F, geometry in zip((Welcome, RPS_Settings, RPS_One_Choose, RPS_Two_Choose, RPS_Animation, RPS_Output, TTT_Settings, TTT_Board), ('400x400', '400x400', '', '400x400', '', '400x400', '400x400', '400x400')):
+        for F, geometry in zip((Welcome, RPS_Settings, RPS_One_Choose, RPS_Two_Choose, RPS_Animation, RPS_Output, TTT_Settings, TTT_Board), ('300x300', '400x400', '300x300', '400x400', '', '400x400', '250x300', '400x400')):
             page_name = F.__name__
             frame = F(parent=container, controller=self)
 
@@ -94,13 +95,15 @@ class Welcome(tk.Frame):
         self.grid_columnconfigure(0, weight=1)
 
         # create button and labels
-        title_label = Label(self, text="Mini Game Corner", font=("Arial", 24), fg=self.control.seven_seas,
-                            background=self.control.purple_illusion, width=15, borderwidth=5)
-        rps_button = Button(self, text="Rock Paper Scissors", width=20, height=5, command=lambda: controller.show_frame("RPS_Settings"))
-        ttt_button = Button(self, text="Tic-Tac-Toe", width=20, height=5)
+        title_label = Label(self, text="Mini Game Corner", font=self.control.large_font, fg=self.control.seven_seas,
+                            background=self.control.purple_illusion, width=15)
+        rps_button = Button(self, text="Rock Paper Scissors", font=self.control.normal_font, borderwidth=5,
+                            width=20, height=5, background=self.control.quick_freeze, command=lambda: controller.show_frame("RPS_Settings"))
+        ttt_button = Button(self, text="Tic-Tac-Toe", borderwidth=5, background=self.control.quick_freeze,
+                            font=self.control.normal_font, width=20, height=5, command=lambda: controller.show_frame("TTT_Settings"))
 
         # add button and labels to frame with grid
-        title_label.grid(row=0, column=0, rowspan=2,  padx=5, pady=5, sticky=NSEW)
+        title_label.grid(row=0, column=0,  padx=5, pady=5, sticky=NSEW)
         rps_button.grid(row=2, column=0, sticky=NSEW, padx=5, pady=5)
         ttt_button.grid(row=3, column=0, sticky=NSEW, padx=5, pady=5)
 
@@ -111,28 +114,34 @@ class RPS_Settings(tk.Frame):
         self.control = Controller_Class()
         self.config(padx=5, pady=5)
 
+        self.config(bg=self.control.purple_illusion)
+
         # helps with dynamic resizing
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
 
         top_row = tk.Frame(self)
+        top_row.config(background=self.control.purple_illusion)
 
         # images
         home_img_path = os.path.join(self.control.absolute_path, 'images/home.png')
         home_photo = PhotoImage(file=home_img_path)
-        home_photo_sub = home_photo.subsample(10, 10)
+        home_photo_sub = home_photo.subsample(3, 3)
 
         # create button and labels
-        button_home_page = Button(top_row, image=home_photo_sub, padx=40, pady=10, command=lambda: controller.show_frame("Welcome"))
+        button_home_page = Button(top_row, image=home_photo_sub, padx=40, pady=10, background=self.control.purple_illusion,
+                                  relief=GROOVE, borderwidth=2, command=lambda: controller.show_frame("Welcome"))
         button_home_page.image = home_photo_sub  # type: ignore # keep a reference
         button_home_page.pack(side="left")
-        rps_label = Label(top_row, text="Rock Paper Scissors", font=("Arial", 24), width=15, borderwidth=5)
+        rps_label = Label(top_row, text="Rock-Paper-Scissors", font=self.control.bold_font, width=18, background=self.control.purple_illusion, borderwidth=5)
         rps_label.pack(side="left")
 
         # create buttons
-        one_player_button = Button(self, text="One Player", font=("Arial", 24), width=15, borderwidth=5, relief=SUNKEN, command=lambda: one_player_button_press())
-        two_player_button = Button(self, text="Two Player", font=("Arial", 24), width=15, borderwidth=5, relief=RAISED, bg="gray", command=lambda: two_player_button_press())
-        ready_button = Button(self, text="Play!", font=("Arial", 24), width=15, borderwidth=5, command=lambda: ready_button_press())
+        one_player_button = Button(self, text="One Player", font=("Arial", 24), width=15, borderwidth=5,
+                                   background=self.control.continental_waters, relief=SUNKEN, command=lambda: one_player_button_press())
+        two_player_button = Button(self, text="Two Player", font=("Arial", 24), width=15, borderwidth=5,
+                                   background=self.control.seven_seas, relief=RAISED, command=lambda: two_player_button_press())
+        ready_button = Button(self, text="Play!", font=("Arial", 24), width=15, borderwidth=5, background=self.control.magic_carpet, command=lambda: ready_button_press())
 
         # add to grids
         top_row.grid(column=0, row=0)
@@ -146,14 +155,14 @@ class RPS_Settings(tk.Frame):
         def one_player_button_press():
             global rps_players
             rps_players = 1
-            one_player_button.config(relief=SUNKEN, bg="white")
-            two_player_button.config(relief=RAISED, bg="gray")
+            one_player_button.config(relief=SUNKEN, background=self.control.continental_waters)
+            two_player_button.config(relief=RAISED, background=self.control.seven_seas)
 
         def two_player_button_press():
             global rps_players
             rps_players = 2
-            one_player_button.config(relief=RAISED, bg="gray")
-            two_player_button.config(relief=SUNKEN, bg="white")
+            one_player_button.config(relief=RAISED, background=self.control.seven_seas)
+            two_player_button.config(relief=SUNKEN, background=self.control.continental_waters)
 
         def ready_button_press():
             if (rps_players == 1):
@@ -171,12 +180,14 @@ class RPS_One_Choose(tk.Frame):
         # helps with dynamic resizing
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
+        self.config(background=self.control.purple_illusion)
 
-        choose_label = Label(self, text="Make your choice!", font=self.control.bold_font, padx=10, pady=10, bg='white')
+        choose_label = Label(self, text="Make your choice!", font=self.control.bold_font,
+                             foreground=self.control.seven_seas, background=self.control.purple_illusion, padx=5, pady=5)
         rock_button = Button(self, text="Rock", relief=SUNKEN, background=self.control.continental_waters, command=lambda: rock_button_press())
         paper_button = Button(self, text="Paper", relief=RAISED, background=self.control.seven_seas, command=lambda: paper_button_press())
         scissor_button = Button(self, text="Scissor", relief=RAISED, background=self.control.seven_seas, command=lambda: scissor_button_press())
-        shoot_button = Button(self, text="Shoot!", relief=RAISED, background=self.control.dream_forest, command=lambda: shoot_button_press())
+        shoot_button = Button(self, text="Shoot!", relief=RAISED, background=self.control.magic_carpet, command=lambda: shoot_button_press())
 
         choose_label.grid(column=0, row=0, sticky=NSEW)
         rock_button.grid(column=0, row=1, sticky=NSEW)
@@ -238,7 +249,8 @@ class RPS_Animation(tk.Frame):
 
         display.grid(column=0, row=0)
 
-        result = Button(self, text="See Result", command=lambda: controller.show_frame("RPS_Output"))
+        result = Button(self, text="See Result", background=self.control.purple_illusion,
+                        fg=self.control.seven_seas, command=lambda: controller.show_frame("RPS_Output"))
         result.grid(column=0, row=1)
 
         frameList = []
@@ -268,22 +280,102 @@ class RPS_Output(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         self.control = Controller_Class()
-        self.config(padx=5, pady=5)
+        self.config(padx=5, pady=5, background=self.control.purple_illusion)
 
         # helps with dynamic resizing
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
+
+        # images
+        home_img_path = os.path.join(self.control.absolute_path, 'images/home.png')
+        home_photo = PhotoImage(file=home_img_path)
+        home_photo_sub = home_photo.subsample(5, 5)
+
+        restart_img_path = os.path.join(self.control.absolute_path, 'images/restart.png')
+        restart_photo = PhotoImage(file=restart_img_path)
+        restart_photo_sub = restart_photo.subsample(5, 5)
+
+        # create buttons and labels
+        p1_chose_label = Label(self, text="Player 1 Chose: ", background=self.control.purple_illusion)
+        p1_picture = Label(self, text="Pictures here", background=self.control.purple_illusion)
+
+        p2_chose_label = Label(self, text="Player 2 Chose: ", background=self.control.purple_illusion)
+        p2_picture = Label(self, text="Pictures here", background=self.control.purple_illusion)
+
+        winner_text_label = Label(self, text="Winner: ", background=self.control.purple_illusion)
+        winner_box = Label(self, text="Player 1!", background=self.control.purple_illusion)
+
+        home_button = Button(self, image=home_photo_sub, background=self.control.purple_illusion, command=lambda: home_button_press())
+        home_button.image = home_photo_sub  # type: ignore # keep a reference
+        play_again_button = Button(self, image=restart_photo_sub, background=self.control.purple_illusion, command=lambda: restart_button_press())
+        play_again_button.image = restart_photo_sub  # type: ignore # keep a reference
+
+        # layout to grid
+        p1_chose_label.grid(row=0, column=0, columnspan=2)
+        p1_picture.grid(row=1, column=0, columnspan=2, rowspan=2)
+
+        p2_chose_label.grid(row=0, column=2, columnspan=2)
+        p2_picture.grid(row=1, column=2, columnspan=2, rowspan=2)
+
+        winner_text_label.grid(row=3, column=0, columnspan=3)
+        winner_box.grid(row=4, column=0, columnspan=3)
+
+        home_button.grid(row=3, column=3)
+        play_again_button.grid(row=4, column=3)
+
+        def home_button_press():
+            controller.show_frame("Welcome")
+
+        def restart_button_press():
+            controller.show_frame("RPS_Settings")
+
+        if (self.control.rps_player_One_Choice == 1):
+            p1_picture.config(text="Rock")
+        elif (self.control.rps_player_One_Choice == 2):
+            p1_picture.config(text="Paper")
+        elif (self.control.rps_player_One_Choice == 3):
+            p1_picture.config(text="Scissors")
 
 
 class TTT_Settings(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         self.control = Controller_Class()
-        self.config(padx=5, pady=5)
+        self.config(padx=5, pady=5, background=self.control.purple_illusion)
 
         # helps with dynamic resizing
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
+
+        easy_hard = tk.Frame(self)
+
+        # images
+        home_img_path = os.path.join(self.control.absolute_path, 'images/home.png')
+        home_photo = PhotoImage(file=home_img_path)
+        home_photo_sub = home_photo.subsample(5, 5)
+
+        title = Label(self, text="Tic-Tac-Toe", font=self.control.bold_font, background=self.control.purple_illusion)
+        home_button = Button(self, image=home_photo_sub, background=self.control.purple_illusion, command=lambda: home_button_press())
+        home_button.image = home_photo_sub  # type: ignore # keep a reference
+        two_player = Button(self, text="Two Players", relief=SUNKEN, font=self.control.large_font, background=self.control.continental_waters)
+        one_player = Button(self, text="One Player", font=self.control.large_font, background=self.control.seven_seas)
+
+        easy = Button(easy_hard, text="Easy", font=self.control.large_font, background=self.control.seven_seas)
+        hard = Button(easy_hard, text="Hard", font=self.control.large_font, background=self.control.seven_seas)
+        easy.pack(side="left")
+        hard.pack(side="left")
+
+        play_button = Button(self, text="Play!", font=self.control.bold_font, background=self.control.magic_carpet)
+
+        title.grid(column=1, row=0)
+        home_button.grid(column=0, row=0)
+        two_player.grid(column=0, row=1, columnspan=2)
+        one_player.grid(column=0, row=2, columnspan=2)
+        easy_hard.grid(column=0, row=3, columnspan=2)
+        play_button.grid(column=0, row=4, columnspan=2)
+
+        def home_button_press():
+            controller.show_frame("Welcome")
 
 
 class TTT_Board(tk.Frame):
@@ -302,7 +394,7 @@ root.mainloop()
 
 
 # ideas:
-#
+# change animation into output window, have 2 frames, update all values and pictures upon reveal button click
 #
 #
 #
