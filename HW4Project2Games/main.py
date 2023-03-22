@@ -5,6 +5,7 @@ Description: This program is the gui for project 2 which will have RPS and TICTA
 import tkinter as tk
 from tkinter import *
 from tkinter import ttk
+import random
 import os
 import time
 
@@ -28,9 +29,6 @@ class Controller_Class:
         self.bold_font = ("Arial", 20, "bold")
         self.large_font = ("Arial", 16)
         self.normal_font = ("Arial", 12)
-
-        self.rps_player_One_Choice = -1
-        self.rps_player_Two_Choice = -1
 
         self.purple_illusion = "#beadfe"
         self.dream_forest = "#b4a2f1"
@@ -59,7 +57,7 @@ class Page_Container(tk.Tk):
 
         # iterating through a tuple consisting
         # of the different page layouts
-        for F, geometry in zip((Welcome, RPS_Settings, RPS_One_Choose, RPS_Two_Choose, RPS_Output, TTT_Settings, TTT_Board), ('300x300', '400x400', '300x300', '400x400', '400x400', '250x300', '400x400')):
+        for F, geometry in zip((Welcome, RPS_Settings, RPS_One_Choose, RPS_Two_Choose, RPS_Output, TTT_Settings, TTT_Board), ('300x300', '400x400', '300x300', '400x400', '', '250x300', '400x400')):
             page_name = F.__name__
             frame = F(parent=container, controller=self)
 
@@ -201,7 +199,6 @@ class RPS_One_Choose(tk.Frame):
         def rock_button_press():
             global player_one_choice
             player_one_choice = 1
-            self.control.rps_player_One_Choice = 1
             rock_button.config(relief=SUNKEN, background=self.control.continental_waters)
             paper_button.config(relief=RAISED, background=self.control.seven_seas)
             scissor_button.config(relief=RAISED, background=self.control.seven_seas)
@@ -209,7 +206,6 @@ class RPS_One_Choose(tk.Frame):
         def paper_button_press():
             global player_one_choice
             player_one_choice = 2
-            self.control.rps_player_One_Choice = 2
             rock_button.config(relief=RAISED, background=self.control.seven_seas)
             paper_button.config(relief=SUNKEN, background=self.control.continental_waters)
             scissor_button.config(relief=RAISED, background=self.control.seven_seas)
@@ -217,12 +213,13 @@ class RPS_One_Choose(tk.Frame):
         def scissor_button_press():
             global player_one_choice
             player_one_choice = 3
-            self.control.rps_player_One_Choice = 3
             rock_button.config(relief=RAISED, background=self.control.seven_seas)
             paper_button.config(relief=RAISED, background=self.control.seven_seas)
             scissor_button.config(relief=SUNKEN, background=self.control.continental_waters)
 
         def shoot_button_press():
+            global player_two_choice
+            player_two_choice = random.randint(1, 3)
             controller.show_frame("RPS_Output")
 
 
@@ -244,10 +241,11 @@ class RPS_Output(tk.Frame):
         self.config(padx=5, pady=5, background=self.control.purple_illusion)
 
         animation = tk.Frame(self)
+        animation.config(background=self.control.purple_illusion)
         result_page = tk.Frame(self)
 
         animation.grid(row=0, column=0)
-        result_page.grid(row=0, column=0)
+        result_page.grid(row=0, column=0, sticky='NESW')
 
         animation.grid()
         result_page.grid_remove()
@@ -269,7 +267,7 @@ class RPS_Output(tk.Frame):
         display.grid(column=0, row=0)
 
         result = Button(animation, text="See Result", background=self.control.purple_illusion,
-                        fg=self.control.seven_seas, command=lambda: result_button_press())
+                        fg=self.control.seven_seas, command=lambda: update_results())
         result.grid(column=0, row=1)
 
         frameList = []
@@ -297,17 +295,17 @@ class RPS_Output(tk.Frame):
         # End of animation part
 
         # helps with dynamic resizing
-        result.grid_rowconfigure(0, weight=1)
-        result.grid_columnconfigure(0, weight=1)
-        result.grid_rowconfigure(1, weight=1)
-        result.grid_columnconfigure(1, weight=1)
-        result.grid_rowconfigure(2, weight=1)
-        result.grid_columnconfigure(2, weight=1)
-        result.grid_rowconfigure(3, weight=1)
-        result.grid_columnconfigure(3, weight=1)
-        result.grid_rowconfigure(4, weight=1)
-        result.grid_columnconfigure(4, weight=1)
-        result.grid_rowconfigure(5, weight=1)
+        result_page.grid_rowconfigure(0, weight=1)
+        result_page.grid_columnconfigure(0, weight=1)
+        result_page.grid_rowconfigure(1, weight=1)
+        result_page.grid_columnconfigure(1, weight=1)
+        result_page.grid_rowconfigure(2, weight=1)
+        result_page.grid_columnconfigure(2, weight=1)
+        result_page.grid_rowconfigure(3, weight=1)
+        result_page.grid_columnconfigure(3, weight=1)
+        result_page.grid_rowconfigure(4, weight=1)
+
+        self.config(background=self.control.purple_illusion)
 
         # images
         home_img_path = os.path.join(self.control.absolute_path, 'images/home.png')
@@ -320,27 +318,27 @@ class RPS_Output(tk.Frame):
 
         left_rock_path = os.path.join(self.control.absolute_path, 'images/leftRockHand.png')
         left_rock_photo = PhotoImage(file=left_rock_path)
-        left_rock_photo_sub = left_rock_photo.subsample(3, 3)
+        left_rock_photo_sub = left_rock_photo.subsample(2, 2)
 
         right_rock_path = os.path.join(self.control.absolute_path, 'images/rightRockHand.png')
         right_rock_photo = PhotoImage(file=right_rock_path)
-        right_rock_photo_sub = right_rock_photo.subsample(3, 3)
+        right_rock_photo_sub = right_rock_photo.subsample(2, 2)
 
         left_paper_path = os.path.join(self.control.absolute_path, 'images/leftPaperHand.png')
         left_paper_photo = PhotoImage(file=left_paper_path)
-        left_paper_photo_sub = left_paper_photo.subsample(3, 3)
+        left_paper_photo_sub = left_paper_photo.subsample(2, 2)
 
         right_paper_path = os.path.join(self.control.absolute_path, 'images/rightPaperHand.png')
         right_paper_photo = PhotoImage(file=right_paper_path)
-        right_paper_photo_sub = right_paper_photo.subsample(3, 3)
+        right_paper_photo_sub = right_paper_photo.subsample(2, 2)
 
         left_scissor_path = os.path.join(self.control.absolute_path, 'images/leftScissorHand.png')
         left_scissor_photo = PhotoImage(file=left_scissor_path)
-        left_scissor_photo_sub = left_scissor_photo.subsample(3, 3)
+        left_scissor_photo_sub = left_scissor_photo.subsample(2, 2)
 
         right_scissor_path = os.path.join(self.control.absolute_path, 'images/rightScissorHand.png')
         right_scissor_photo = PhotoImage(file=right_scissor_path)
-        right_scissor_photo_sub = right_scissor_photo.subsample(3, 3)
+        right_scissor_photo_sub = right_scissor_photo.subsample(2, 2)
 
         # create buttons and labels
         p1_chose_label = Label(result_page, text="Player 1 Chose: ", background=self.control.purple_illusion)
@@ -372,40 +370,58 @@ class RPS_Output(tk.Frame):
         home_button.grid(row=3, column=3, sticky=NSEW)
         play_again_button.grid(row=4, column=3, sticky=NSEW)
 
-        def result_button_press():
-            animation.grid_remove()
-            result_page.grid()
-
         def home_button_press():
             controller.show_frame("Welcome")
-            result_page.grid_remove()
+            result_page.grid_forget()
             animation.grid()
 
         def restart_button_press():
             controller.show_frame("RPS_Settings")
-            result_page.grid_remove()
+            result_page.grid_forget()
             animation.grid()
 
-        if (player_one_choice == 1):
-            p1_picture.config(image=right_rock_photo_sub)
-            p1_picture.image = right_rock_photo_sub  # type: ignore
-        elif (player_one_choice == 2):
-            print("Something is working")
-            p1_picture.config(image=right_paper_photo_sub)
-            p1_picture.image = right_paper_photo_sub  # type: ignore
-        elif (player_one_choice == 3):
-            p1_picture.config(image=right_scissor_photo_sub)
-            p1_picture.image = right_scissor_photo_sub  # type: ignore
+        def update_results():
+            animation.grid_remove()
+            result_page.grid()
+            self.grid_rowconfigure(0, weight=1)
+            self.grid_columnconfigure(0, weight=1)
+            if (player_one_choice == 1):
+                p1_picture.config(image=left_rock_photo_sub)
+                p1_picture.image = left_rock_photo_sub  # type: ignore
+            elif (player_one_choice == 2):
+                p1_picture.config(image=left_paper_photo_sub)
+                p1_picture.image = left_paper_photo_sub  # type: ignore
+            elif (player_one_choice == 3):
+                p1_picture.config(image=left_scissor_photo_sub)
+                p1_picture.image = left_scissor_photo_sub  # type: ignore
 
-        if (self.control.rps_player_Two_Choice == 1):
-            p2_picture.config(image=left_rock_photo_sub)
-            p2_picture.image = left_rock_photo_sub  # type: ignore
-        elif (self.control.rps_player_Two_Choice == 2):
-            p2_picture.config(image=left_paper_photo_sub)
-            p2_picture.image = left_paper_photo_sub  # type: ignore
-        elif (self.control.rps_player_Two_Choice == 3):
-            p2_picture.config(image=left_scissor_photo_sub)
-            p2_picture.image = left_scissor_photo_sub  # type: ignore
+            if (player_two_choice == 1):
+                p2_picture.config(image=right_rock_photo_sub)
+                p2_picture.image = right_rock_photo_sub  # type: ignore
+                if (player_one_choice == 1):
+                    winner_box.config(text="Tie")
+                elif (player_one_choice == 2):
+                    winner_box.config(text="Player 1 Wins!")
+                else:
+                    winner_box.config(text="Player 2 Wins!")
+            elif (player_two_choice == 2):
+                p2_picture.config(image=right_paper_photo_sub)
+                p2_picture.image = right_paper_photo_sub  # type: ignore
+                if (player_one_choice == 1):
+                    winner_box.config(text="Player 2 Wins!")
+                elif (player_one_choice == 2):
+                    winner_box.config(text="Tie")
+                else:
+                    winner_box.config(text="Player 1 Wins!")
+            elif (player_two_choice == 3):
+                p2_picture.config(image=right_scissor_photo_sub)
+                p2_picture.image = right_scissor_photo_sub  # type: ignore
+                if (player_one_choice == 1):
+                    winner_box.config(text="Player 1 Wins!")
+                elif (player_one_choice == 2):
+                    winner_box.config(text="Player 2 Wins!")
+                else:
+                    winner_box.config(text="Tie")
 
 
 class TTT_Settings(tk.Frame):
