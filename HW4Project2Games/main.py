@@ -567,6 +567,17 @@ class TTT_Board_One_Player(tk.Frame):
         self.grid_columnconfigure(0, weight=1)
 
         board = tk.Frame(self)
+        display = tk.Frame(self)
+
+        top_left = Button()
+        top_mid = Button()
+        top_right = Button()
+        mid_left = Button()
+        mid_mid = Button()
+        mid_right = Button()
+        bot_left = Button()
+        bot_mid = Button()
+        bot_right = Button()
 
 
 class TTT_Board_Two_Player(tk.Frame):
