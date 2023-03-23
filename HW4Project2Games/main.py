@@ -206,7 +206,7 @@ class RPS_One_Choose(tk.Frame):
         shoot_button.grid(column=0, row=4, sticky=NSEW)
 
         global player_one_choice
-        player_one_choice = 0
+        player_one_choice = 1
 
         def rock_button_press():
             global player_one_choice
@@ -230,9 +230,14 @@ class RPS_One_Choose(tk.Frame):
             scissor_button.config(relief=SUNKEN, background=self.control.continental_waters)
 
         def shoot_button_press():
+            global player_one_choice
             global player_two_choice
             player_two_choice = random.randint(1, 3)
-            controller.show_frame("RPS_Output")
+            if(player_one_choice == 0):
+                player_one_choice = 1
+                controller.show_frame("RPS_Output")
+            else:
+                controller.show_frame("RPS_Output")
 
 
 class RPS_Two_Choose(tk.Frame):
@@ -495,6 +500,7 @@ class RPS_Output(tk.Frame):
                     winner_box.config(text="Player 1 Wins!")
                 else:
                     winner_box.config(text="Player 2 Wins!")
+
             elif (player_two_choice == 2):
                 p2_picture.config(image=right_paper_photo_sub)
                 p2_picture.image = right_paper_photo_sub  # type: ignore
@@ -504,6 +510,7 @@ class RPS_Output(tk.Frame):
                     winner_box.config(text="Tie")
                 else:
                     winner_box.config(text="Player 1 Wins!")
+
             elif (player_two_choice == 3):
                 p2_picture.config(image=right_scissor_photo_sub)
                 p2_picture.image = right_scissor_photo_sub  # type: ignore
@@ -524,6 +531,8 @@ class TTT_Settings(tk.Frame):
         # helps with dynamic resizing
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
+        self.grid_rowconfigure(1, weight=1)
+        self.grid_columnconfigure(1, weight=1)
 
         easy_hard = tk.Frame(self)
 
@@ -535,15 +544,15 @@ class TTT_Settings(tk.Frame):
         title = Label(self, text="Tic-Tac-Toe", font=self.control.bold_font, background=self.control.purple_illusion)
         home_button = Button(self, image=home_photo_sub, background=self.control.purple_illusion, command=lambda: home_button_press())
         home_button.image = home_photo_sub  # type: ignore # keep a reference
-        two_player = Button(self, text="Two Players", relief=SUNKEN, font=self.control.large_font, background=self.control.continental_waters)
-        one_player = Button(self, text="One Player", font=self.control.large_font, background=self.control.seven_seas)
+        two_player = Button(self, text="Two Players", relief=SUNKEN, font=self.control.large_font, background=self.control.continental_waters, command=lambda: two_player_press())
+        one_player = Button(self, text="One Player", font=self.control.large_font, background=self.control.seven_seas, command=lambda: one_player_press())
 
-        easy = Button(easy_hard, text="Easy", font=self.control.large_font, background=self.control.seven_seas)
-        hard = Button(easy_hard, text="Hard", font=self.control.large_font, background=self.control.seven_seas)
+        easy = Button(easy_hard, state=DISABLED, text="Easy", font=self.control.large_font, background=self.control.seven_seas, command=lambda: easy_button_press())
+        hard = Button(easy_hard, state=DISABLED, text="Hard", font=self.control.large_font, background=self.control.seven_seas, command=lambda: hard_button_press())
         easy.pack(side="left")
         hard.pack(side="left")
 
-        play_button = Button(self, text="Play!", font=self.control.bold_font, background=self.control.magic_carpet)
+        play_button = Button(self, text="Play!", font=self.control.bold_font, background=self.control.magic_carpet, command=lambda: play_button_press())
 
         title.grid(column=1, row=0)
         home_button.grid(column=0, row=0)
@@ -551,44 +560,734 @@ class TTT_Settings(tk.Frame):
         one_player.grid(column=0, row=2, columnspan=2)
         easy_hard.grid(column=0, row=3, columnspan=2)
         play_button.grid(column=0, row=4, columnspan=2)
+        global ttt_players
+        ttt_players = 2
 
         def home_button_press():
             controller.show_frame("Welcome")
 
+        def easy_button_press():
+            global ttt_mode
+            ttt_mode = 1
+            easy.config(relief=SUNKEN, background=self.control.continental_waters)
+            hard.config(relief=RAISED, background=self.control.seven_seas)
 
+        def hard_button_press():
+            global ttt_mode
+            ttt_mode = 2
+            hard.config(relief=SUNKEN, background=self.control.continental_waters)
+            easy.config(relief=RAISED, background=self.control.seven_seas)
+        
+        def one_player_press():
+            global ttt_players
+            ttt_players = 1
+            global ttt_mode
+            ttt_mode = 1
+            two_player.config(relief=RAISED, background=self.control.seven_seas)
+            one_player.config(relief=SUNKEN, background=self.control.continental_waters)
+            easy.config(state=NORMAL, relief=SUNKEN, background=self.control.continental_waters)
+            hard.config(state=NORMAL, relief=RAISED, background=self.control.seven_seas)
+
+        def two_player_press():
+            global ttt_players
+            ttt_players = 2
+            two_player.config(relief=SUNKEN, background=self.control.continental_waters)
+            one_player.config(relief=RAISED, background=self.control.seven_seas)
+            easy.config(state=DISABLED, relief=RAISED, background=self.control.seven_seas)
+            hard.config(state=DISABLED, relief=RAISED, background= self.control.seven_seas)
+
+        
+        def play_button_press():
+            global ttt_players
+            if(ttt_players==2):
+                controller.show_frame("TTT_Board_Two_Player")
+            elif(ttt_players==1):
+                if(ttt_mode == 1):
+                    controller.show_frame("TTT_Board_One_Player")
+                elif(ttt_mode == 2):
+                    controller.show_frame("TTT_Board_One_Player")
+
+                
 class TTT_Board_One_Player(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         self.control = Controller_Class()
-        self.config(padx=5, pady=5)
+        self.config(padx=5, pady=5, background=self.control.purple_illusion)
 
         # helps with dynamic resizing
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
+        self.grid_rowconfigure(1, weight=1)
+        self.grid_columnconfigure(1, weight=1)
+        self.grid_rowconfigure(2, weight=1)
+        self.grid_columnconfigure(2, weight=1)
 
-        board = tk.Frame(self)
-        display = tk.Frame(self)
+        #images
+        X_img_path = os.path.join(self.control.absolute_path, 'images/X.png')
+        X_photo = PhotoImage(file=X_img_path)
+        X_photo_sub = X_photo.subsample(5, 5)
 
-        top_left = Button()
-        top_mid = Button()
-        top_right = Button()
-        mid_left = Button()
-        mid_mid = Button()
-        mid_right = Button()
-        bot_left = Button()
-        bot_mid = Button()
-        bot_right = Button()
+        O_img_path = os.path.join(self.control.absolute_path, 'images/O.png')
+        O_photo = PhotoImage(file=O_img_path)
+        O_photo_sub = O_photo.subsample(5, 5)
+
+        home_img_path = os.path.join(self.control.absolute_path, 'images/home.png')
+        home_photo = PhotoImage(file=home_img_path)
+        home_photo_sub = home_photo.subsample(5, 5)
+
+        restart_img_path = os.path.join(self.control.absolute_path, 'images/restart.png')
+        restart_photo = PhotoImage(file=restart_img_path)
+        restart_photo_sub = restart_photo.subsample(5, 5)
+
+        blank_img_path = os.path.join(self.control.absolute_path, 'images/blank.png')
+        blank_photo = PhotoImage(file=blank_img_path)
+        blank_photo_sub = blank_photo.subsample(5, 5)
+
+        display = tk.Frame(self, background=self.control.purple_illusion)
+
+        buttons = []
+        global taken
+        taken = [0,0,0,0,0,0,0,0,0]
+
+
+        home_button = Button(display, image=home_photo_sub, background=self.control.purple_illusion, command=lambda: home_button_press())
+        home_button.image = home_photo_sub  # type: ignore # keep a reference
+        play_again_button = Button(display, image=restart_photo_sub, background=self.control.purple_illusion, command=lambda: restart_button_press())
+        play_again_button.image = restart_photo_sub  # type: ignore # keep a reference
+
+        buttons.append(Button(self, image=blank_photo_sub, background=self.control.seven_seas, command=lambda: top_left_button_press()))
+        buttons[0].image = blank_photo_sub #type: ignore
+        buttons.append(Button(self, image=blank_photo_sub, background=self.control.seven_seas, command=lambda: top_mid_button_press()))
+        buttons[1].image = blank_photo_sub #type: ignore
+        buttons.append( Button(self, image=blank_photo_sub, background=self.control.seven_seas, command=lambda: top_right_button_press()))
+        buttons[2].image = blank_photo_sub #type: ignore
+        buttons.append( Button(self, image=blank_photo_sub, background=self.control.seven_seas, command=lambda: mid_left_button_press()))
+        buttons[3].image = blank_photo_sub #type: ignore
+        buttons.append( Button(self, image=blank_photo_sub, background=self.control.seven_seas, command=lambda: mid_mid_button_press()))
+        buttons[4].image = blank_photo_sub #type: ignore
+        buttons.append( Button(self, image=blank_photo_sub, background=self.control.seven_seas, command=lambda: mid_right_button_press()))
+        buttons[5].image = blank_photo_sub #type: ignore
+        buttons.append( Button(self, image=blank_photo_sub, background=self.control.seven_seas, command=lambda: bot_left_button_press()))
+        buttons[6].image = blank_photo_sub #type: ignore
+        buttons.append( Button(self, image=blank_photo_sub, background=self.control.seven_seas, command=lambda: bot_mid_button_press()))
+        buttons[7].image = blank_photo_sub #type: ignore
+        buttons.append( Button(self, image=blank_photo_sub, background=self.control.seven_seas, command=lambda: bot_right_button_press()))
+        buttons[8].image = blank_photo_sub #type: ignore
+        
+
+        turn_label = Label(display, text="Player One's Turn", font=self.control.large_font, background=self.control.purple_illusion)
+
+        buttons[0].grid(row=0, column=0, sticky='NESW')
+        buttons[1].grid(row=0, column=1, sticky='NESW')
+        buttons[2].grid(row=0, column=2, sticky='NESW')
+        buttons[3].grid(row=1, column=0, sticky='NESW')
+        buttons[4].grid(row=1, column=1, sticky='NESW')
+        buttons[5].grid(row=1, column=2, sticky='NESW')
+        buttons[6].grid(row=2, column=0, sticky='NESW')
+        buttons[7].grid(row=2, column=1, sticky='NESW')
+        buttons[8].grid(row=2, column=2, sticky='NESW')
+
+        turn_label.grid(column=0, columnspan=2, row=0)
+        play_again_button.grid(column=0, row=1)
+        home_button.grid(column=1, row=1)
+
+        display.grid(column=0, columnspan=3, row=4)
+
+        def home_button_press():
+            global taken
+            taken = [0,0,0,0,0,0,0,0,0]
+            buttons[0].config(image=blank_photo_sub, background=self.control.seven_seas, command=lambda: top_left_button_press())
+            buttons[0].image = blank_photo_sub #type: ignore
+            buttons[1].config( image=blank_photo_sub, background=self.control.seven_seas, command=lambda: top_mid_button_press())
+            buttons[1].image = blank_photo_sub #type: ignore
+            buttons[2].config(image=blank_photo_sub, background=self.control.seven_seas, command=lambda: top_right_button_press())
+            buttons[2].image = blank_photo_sub #type: ignore
+            buttons[3].config(image=blank_photo_sub, background=self.control.seven_seas, command=lambda: mid_left_button_press())
+            buttons[3].image = blank_photo_sub #type: ignore
+            buttons[4].config(image=blank_photo_sub, background=self.control.seven_seas, command=lambda: mid_mid_button_press())
+            buttons[4].image = blank_photo_sub #type: ignore
+            buttons[5].config(image=blank_photo_sub, background=self.control.seven_seas, command=lambda: mid_right_button_press())
+            buttons[5].image = blank_photo_sub #type: ignore
+            buttons[6].config(image=blank_photo_sub, background=self.control.seven_seas, command=lambda: bot_left_button_press())
+            buttons[6].image = blank_photo_sub #type: ignore
+            buttons[7].config(image=blank_photo_sub, background=self.control.seven_seas, command=lambda: bot_mid_button_press())
+            buttons[7].image = blank_photo_sub #type: ignore
+            buttons[8].config(image=blank_photo_sub, background=self.control.seven_seas, command=lambda: bot_right_button_press())
+            buttons[8].image = blank_photo_sub #type: ignore
+            turn_label.config(text="Player One's Turn")
+            controller.show_frame("Welcome")
+
+        def restart_button_press():
+            global taken
+            taken = [0,0,0,0,0,0,0,0,0]
+            buttons[0].config(image=blank_photo_sub, background=self.control.seven_seas, command=lambda: top_left_button_press())
+            buttons[0].image = blank_photo_sub #type: ignore
+            buttons[1].config( image=blank_photo_sub, background=self.control.seven_seas, command=lambda: top_mid_button_press())
+            buttons[1].image = blank_photo_sub #type: ignore
+            buttons[2].config(image=blank_photo_sub, background=self.control.seven_seas, command=lambda: top_right_button_press())
+            buttons[2].image = blank_photo_sub #type: ignore
+            buttons[3].config(image=blank_photo_sub, background=self.control.seven_seas, command=lambda: mid_left_button_press())
+            buttons[3].image = blank_photo_sub #type: ignore
+            buttons[4].config(image=blank_photo_sub, background=self.control.seven_seas, command=lambda: mid_mid_button_press())
+            buttons[4].image = blank_photo_sub #type: ignore
+            buttons[5].config(image=blank_photo_sub, background=self.control.seven_seas, command=lambda: mid_right_button_press())
+            buttons[5].image = blank_photo_sub #type: ignore
+            buttons[6].config(image=blank_photo_sub, background=self.control.seven_seas, command=lambda: bot_left_button_press())
+            buttons[6].image = blank_photo_sub #type: ignore
+            buttons[7].config(image=blank_photo_sub, background=self.control.seven_seas, command=lambda: bot_mid_button_press())
+            buttons[7].image = blank_photo_sub #type: ignore
+            buttons[8].config(image=blank_photo_sub, background=self.control.seven_seas, command=lambda: bot_right_button_press())
+            buttons[8].image = blank_photo_sub #type: ignore
+            turn_label.config(text="Player One's Turn")
+            controller.show_frame("TTT_Settings")
+
+        def top_left_button_press():
+            global taken
+            taken[0] = 1
+            buttons[0].config(image=X_photo_sub, command=lambda: None)
+            buttons[0].image = X_photo_sub #type: ignore
+            check_winner()
+            computer_turn()
+        
+        def top_mid_button_press():
+            global taken
+            taken[1] = 1
+            buttons[1].config(image=X_photo_sub, command=lambda: None)
+            buttons[1].image = X_photo_sub #type: ignore
+            check_winner()
+            computer_turn()
+
+        def top_right_button_press():
+            global taken
+            taken[2] = 1
+            buttons[2].config(image=X_photo_sub, command=lambda: None)
+            buttons[2].image = X_photo_sub #type: ignore
+            check_winner()
+            computer_turn()
+
+        def mid_left_button_press():
+            global taken
+            taken[3] = 1
+            buttons[3].config(image=X_photo_sub, command=lambda: None)
+            buttons[3].image = X_photo_sub #type: ignore
+            check_winner()
+            computer_turn()
+
+        def mid_mid_button_press():
+            global taken
+            taken[4] = 1
+            buttons[4].config(image=X_photo_sub, command=lambda: None)
+            buttons[4].image = X_photo_sub #type: ignore
+            check_winner()
+            computer_turn()
+
+        def mid_right_button_press():
+            global taken
+            taken[5] = 1
+            buttons[5].config(image=X_photo_sub, command=lambda: None)
+            buttons[5].image = X_photo_sub #type: ignore
+            check_winner()
+            computer_turn()
+
+        def bot_left_button_press():
+            global taken
+            taken[6] = 1
+            buttons[6].config(image=X_photo_sub, command=lambda: None)
+            buttons[6].image = X_photo_sub #type: ignore
+            check_winner()
+            computer_turn()
+
+        def bot_mid_button_press():
+            global taken
+            taken[7] = 1
+            buttons[7].config(image=X_photo_sub, command=lambda: None)
+            buttons[7].image = X_photo_sub #type: ignore
+            check_winner()
+            computer_turn()
+
+        def bot_right_button_press():
+            global taken
+            taken[8] = 1
+            buttons[8].config(image=X_photo_sub, command=lambda: None)
+            buttons[8].image = X_photo_sub #type: ignore
+            check_winner()
+            computer_turn()
+
+        def computer_turn():
+            time.sleep(0.5)
+            computers_turn = True
+            counter = 0
+            for x in taken:
+                if taken[x] !=0:
+                    counter+=1
+            if counter >=8:
+                computers_turn = False
+                turn_label.config(text="Cat Game!")
+            while(computers_turn):
+                target = random.randint(0,8)
+                while (taken[target] != 0):
+                    target = random.randint(0,8)
+                taken[target] = 2
+                buttons[target].config(image=O_photo_sub, command=lambda: None)
+                check_winner()
+                computers_turn = False
+
+        def check_winner():
+            if(taken[0] == taken[1] == taken[2]):
+                if(taken[0] == 0 or taken[1] == 0 or taken[2] == 0):
+                    turn_label.config(text="Continue Playing")
+                if taken[0] == 1:
+                    turn_label.config(text="Player 1 Wins!")
+                elif taken[0] == 2:
+                    turn_label.config(text="Player 2 Wins!")
+                    
+            
+
+            
+            
 
 
 class TTT_Board_Two_Player(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         self.control = Controller_Class()
-        self.config(padx=5, pady=5)
+        self.config(padx=5, pady=5, background=self.control.purple_illusion)
 
         # helps with dynamic resizing
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
+        self.grid_rowconfigure(1, weight=1)
+        self.grid_columnconfigure(1, weight=1)
+        self.grid_rowconfigure(2, weight=1)
+        self.grid_columnconfigure(2, weight=1)
+
+        #images
+        X_img_path = os.path.join(self.control.absolute_path, 'images/X.png')
+        X_photo = PhotoImage(file=X_img_path)
+        X_photo_sub = X_photo.subsample(5, 5)
+
+        O_img_path = os.path.join(self.control.absolute_path, 'images/O.png')
+        O_photo = PhotoImage(file=O_img_path)
+        O_photo_sub = O_photo.subsample(5, 5)
+
+        home_img_path = os.path.join(self.control.absolute_path, 'images/home.png')
+        home_photo = PhotoImage(file=home_img_path)
+        home_photo_sub = home_photo.subsample(5, 5)
+
+        restart_img_path = os.path.join(self.control.absolute_path, 'images/restart.png')
+        restart_photo = PhotoImage(file=restart_img_path)
+        restart_photo_sub = restart_photo.subsample(5, 5)
+
+        blank_img_path = os.path.join(self.control.absolute_path, 'images/blank.png')
+        blank_photo = PhotoImage(file=blank_img_path)
+        blank_photo_sub = blank_photo.subsample(5, 5)
+
+        display = tk.Frame(self, background=self.control.purple_illusion)
+
+        buttons = []
+        global p2_taken
+        p2_taken = [0,0,0,0,0,0,0,0,0]
+
+
+        home_button = Button(display, image=home_photo_sub, background=self.control.purple_illusion, command=lambda: home_button_press())
+        home_button.image = home_photo_sub  # type: ignore # keep a reference
+        play_again_button = Button(display, image=restart_photo_sub, background=self.control.purple_illusion, command=lambda: restart_button_press())
+        play_again_button.image = restart_photo_sub  # type: ignore # keep a reference
+
+        buttons.append(Button(self, image=blank_photo_sub, background=self.control.seven_seas, command=lambda: top_left_button_press()))
+        buttons[0].image = blank_photo_sub #type: ignore
+        buttons.append(Button(self, image=blank_photo_sub, background=self.control.seven_seas, command=lambda: top_mid_button_press()))
+        buttons[1].image = blank_photo_sub #type: ignore
+        buttons.append( Button(self, image=blank_photo_sub, background=self.control.seven_seas, command=lambda: top_right_button_press()))
+        buttons[2].image = blank_photo_sub #type: ignore
+        buttons.append( Button(self, image=blank_photo_sub, background=self.control.seven_seas, command=lambda: mid_left_button_press()))
+        buttons[3].image = blank_photo_sub #type: ignore
+        buttons.append( Button(self, image=blank_photo_sub, background=self.control.seven_seas, command=lambda: mid_mid_button_press()))
+        buttons[4].image = blank_photo_sub #type: ignore
+        buttons.append( Button(self, image=blank_photo_sub, background=self.control.seven_seas, command=lambda: mid_right_button_press()))
+        buttons[5].image = blank_photo_sub #type: ignore
+        buttons.append( Button(self, image=blank_photo_sub, background=self.control.seven_seas, command=lambda: bot_left_button_press()))
+        buttons[6].image = blank_photo_sub #type: ignore
+        buttons.append( Button(self, image=blank_photo_sub, background=self.control.seven_seas, command=lambda: bot_mid_button_press()))
+        buttons[7].image = blank_photo_sub #type: ignore
+        buttons.append( Button(self, image=blank_photo_sub, background=self.control.seven_seas, command=lambda: bot_right_button_press()))
+        buttons[8].image = blank_photo_sub #type: ignore
+        
+
+        turn_label = Label(display, text="Player One's Turn", font=self.control.large_font, background=self.control.purple_illusion)
+
+        buttons[0].grid(row=0, column=0, sticky='NESW')
+        buttons[1].grid(row=0, column=1, sticky='NESW')
+        buttons[2].grid(row=0, column=2, sticky='NESW')
+        buttons[3].grid(row=1, column=0, sticky='NESW')
+        buttons[4].grid(row=1, column=1, sticky='NESW')
+        buttons[5].grid(row=1, column=2, sticky='NESW')
+        buttons[6].grid(row=2, column=0, sticky='NESW')
+        buttons[7].grid(row=2, column=1, sticky='NESW')
+        buttons[8].grid(row=2, column=2, sticky='NESW')
+
+        turn_label.grid(column=0, columnspan=2, row=0)
+        play_again_button.grid(column=0, row=1)
+        home_button.grid(column=1, row=1)
+
+        display.grid(column=0, columnspan=3, row=4)
+
+        global player_turn
+        player_turn = 1
+
+        def top_left_button_press():
+            global player_turn
+            global p2_taken
+            if player_turn == 1:    
+                p2_taken[0] = 1
+                buttons[0].config(image=X_photo_sub, command=lambda: None)
+                buttons[0].image = X_photo_sub #type: ignore
+                player_turn = 2
+                turn_label.config(text= "Player Two's Turn")
+            elif player_turn == 2:
+                p2_taken[0] = 2
+                buttons[0].config(image=O_photo_sub, command=lambda: None)
+                buttons[0].image = O_photo_sub #type: ignore
+                player_turn = 1
+                turn_label.config(text= "Player One's Turn")
+            for x in p2_taken:
+                print(x)
+            check_winner()
+            
+        
+        def top_mid_button_press():
+            global player_turn
+            global p2_taken
+            if player_turn == 1:    
+                p2_taken[1] = 1
+                buttons[1].config(image=X_photo_sub, command=lambda: None)
+                buttons[1].image = X_photo_sub #type: ignore
+                player_turn = 2
+                turn_label.config(text= "Player Two's Turn")
+            elif player_turn == 2:
+                p2_taken[1] = 2
+                buttons[1].config(image=O_photo_sub, command=lambda: None)
+                buttons[1].image = O_photo_sub #type: ignore
+                player_turn = 1
+                turn_label.config(text= "Player One's Turn")
+            check_winner()
+            
+
+        def top_right_button_press():
+            global player_turn
+            global p2_taken
+            if player_turn == 1:    
+                p2_taken[2] = 1
+                buttons[2].config(image=X_photo_sub, command=lambda: None)
+                buttons[2].image = X_photo_sub #type: ignore
+                player_turn = 2
+                turn_label.config(text= "Player Two's Turn")
+            elif player_turn == 2:
+                p2_taken[2] = 2
+                buttons[2].config(image=O_photo_sub, command=lambda: None)
+                buttons[2].image = O_photo_sub #type: ignore
+                player_turn = 1
+                turn_label.config(text= "Player One's Turn")
+            check_winner()
+
+
+        def mid_left_button_press():
+            global player_turn
+            global p2_taken
+            if player_turn == 1:    
+                p2_taken[3] = 1
+                buttons[3].config(image=X_photo_sub, command=lambda: None)
+                buttons[3].image = X_photo_sub #type: ignore
+                player_turn = 2
+                turn_label.config(text= "Player Two's Turn")
+            elif player_turn == 2:
+                p2_taken[3] = 2
+                buttons[3].config(image=O_photo_sub, command=lambda: None)
+                buttons[3].image = O_photo_sub #type: ignore
+                player_turn = 1
+                turn_label.config(text= "Player One's Turn")
+            check_winner()
+            
+
+        def mid_mid_button_press():
+            global player_turn
+            global p2_taken
+            if player_turn == 1:    
+                p2_taken[4] = 2
+                buttons[4].config(image=X_photo_sub, command=lambda: None)
+                buttons[4].image = X_photo_sub #type: ignore
+                player_turn = 2
+                turn_label.config(text= "Player Two's Turn")
+            elif player_turn == 2:
+                p2_taken[4] = 2
+                buttons[4].config(image=O_photo_sub, command=lambda: None)
+                buttons[4].image = O_photo_sub #type: ignore
+                player_turn = 1
+                turn_label.config(text= "Player One's Turn")
+            check_winner()
+            
+
+        def mid_right_button_press():
+            global player_turn
+            global p2_taken
+            if player_turn == 1:    
+                p2_taken[5] = 1
+                buttons[5].config(image=X_photo_sub, command=lambda: None)
+                buttons[5].image = X_photo_sub #type: ignore
+                player_turn = 2
+                turn_label.config(text= "Player Two's Turn")
+            elif player_turn == 2:
+                p2_taken[5] = 2
+                buttons[5].config(image=O_photo_sub, command=lambda: None)
+                buttons[5].image = O_photo_sub #type: ignore
+                player_turn = 1
+                turn_label.config(text= "Player One's Turn")
+            check_winner()
+            
+
+        def bot_left_button_press():
+            global player_turn
+            global p2_taken
+            if player_turn == 1:    
+                p2_taken[6] = 1
+                buttons[6].config(image=X_photo_sub, command=lambda: None)
+                buttons[6].image = X_photo_sub #type: ignore
+                player_turn = 2
+                turn_label.config(text= "Player Two's Turn")
+            elif player_turn == 2:
+                p2_taken[6] = 2
+                buttons[6].config(image=O_photo_sub, command=lambda: None)
+                buttons[6].image = O_photo_sub #type: ignore
+                player_turn = 1
+                turn_label.config(text= "Player One's Turn")
+            check_winner()
+            
+
+        def bot_mid_button_press():
+            global player_turn
+            global p2_taken
+            if player_turn == 1:    
+                p2_taken[7] = 1
+                buttons[7].config(image=X_photo_sub, command=lambda: None)
+                buttons[7].image = X_photo_sub #type: ignore
+                player_turn = 2
+                turn_label.config(text= "Player Two's Turn")
+            elif player_turn == 2:
+                p2_taken[7] = 2
+                buttons[7].config(image=O_photo_sub, command=lambda: None)
+                buttons[7].image = O_photo_sub #type: ignore
+                player_turn = 1
+                turn_label.config(text= "Player One's Turn")
+            check_winner()
+            
+
+        def bot_right_button_press():
+            global player_turn
+            global p2_taken
+            if player_turn == 1:    
+                p2_taken[8] = 1
+                buttons[8].config(image=X_photo_sub, command=lambda: None)
+                buttons[8].image = X_photo_sub #type: ignore
+                player_turn = 2
+                turn_label.config(text= "Player Two's Turn")
+            elif player_turn == 2:
+                p2_taken[8] = 2
+                buttons[8].config(image=O_photo_sub, command=lambda: None)
+                buttons[8].image = O_photo_sub #type: ignore
+                player_turn = 1
+                turn_label.config(text= "Player One's Turn")
+            check_winner()
+        
+
+        def check_winner():
+            global p2_taken
+            if p2_taken[0] == p2_taken[1] and p2_taken[1] == p2_taken[2]:
+                if p2_taken[0] == 0 or p2_taken[1] == 0 or p2_taken[2] == 0:
+                    pass
+                elif p2_taken[0] == 1:
+                    for x in (0,1,2):
+                        buttons[x].config(background = self.control.magic_carpet)
+                    turn_label.config(text="Player One Wins!")
+                    for x in (0,8):
+                        buttons[x].config(command=lambda: do_nothing())
+                elif p2_taken[0] == 2:
+                    for x in (0,1,2):
+                        buttons[x].config(background = self.control.wave_splash)
+                    turn_label.config(text="Player Two Wins!")
+                    for x in (0,8):
+                        buttons[x].config(command=lambda: do_nothing())
+
+            if p2_taken[3] == p2_taken[4] and p2_taken[4] == p2_taken[5]:
+                if p2_taken[0] == 0:
+                    return False
+                elif p2_taken[0] == 1:
+                    for x in (3,4,5):
+                        buttons[x].config(background = self.control.magic_carpet)
+                    turn_label.config(text="Player One Wins!")
+                    for x in (0,8):
+                        buttons[x].config(command=lambda: do_nothing())
+                elif p2_taken[0] == 2:
+                    for x in (3,4,5):
+                        buttons[x].config(background = self.control.wave_splash)
+                    turn_label.config(text="Player Two Wins!")
+                    print("player 2")
+                    for x in (0,8):
+                        buttons[x].config(command=lambda: do_nothing())
+            
+            if p2_taken[6] == p2_taken[7] and p2_taken[7] == p2_taken[8]:
+                if p2_taken[0] == 0:
+                    return False
+                elif p2_taken[0] == 1:
+                    for x in (6,7,8):
+                        buttons[x].config(background = self.control.magic_carpet)
+                    turn_label.config(text="Player One Wins!")
+                    for x in (0,8):
+                        buttons[x].config(command=lambda: do_nothing())
+                elif p2_taken[0] == 2:
+                    for x in (6,7,8):
+                        buttons[x].config(background = self.control.wave_splash)
+                    turn_label.config(text="Player Two Wins!")
+                    for x in (0,8):
+                        buttons[x].config(command=lambda: do_nothing())
+
+            if p2_taken[0] == p2_taken[3] and p2_taken[3] == p2_taken[6]:
+                if p2_taken[0] == 0:
+                    return False
+                elif p2_taken[0] == 1:
+                    for x in (0,3,6):
+                        buttons[x].config(background = self.control.magic_carpet)
+                    turn_label.config(text="Player One Wins!")
+                    for x in (0,8):
+                        buttons[x].config(command=lambda: do_nothing())
+                elif p2_taken[0] == 2:
+                    for x in (0,3,6):
+                        buttons[x].config(background = self.control.wave_splash)
+                    turn_label.config(text="Player Two Wins!")
+                    for x in (0,8):
+                        buttons[x].config(command=lambda: do_nothing())
+
+            if p2_taken[1] == p2_taken[4] and p2_taken[4] == p2_taken[7]:
+                if p2_taken[0] == 0:
+                    return False
+                elif p2_taken[0] == 1:
+                    for x in (1,4,7):
+                        buttons[x].config(background = self.control.magic_carpet)
+                    turn_label.config(text="Player One Wins!")
+                    for x in (0,8):
+                        buttons[x].config(command=lambda: do_nothing())
+                elif p2_taken[0] == 2:
+                    for x in (1,4,7):
+                        buttons[x].config(background = self.control.wave_splash)
+                    turn_label.config(text="Player Two Wins!")
+                    for x in (0,8):
+                        buttons[x].config(command=lambda: do_nothing())
+
+            if p2_taken[2] == p2_taken[5] and p2_taken[5] == p2_taken[8]:
+                if p2_taken[0] == 0:
+                    return False
+                elif p2_taken[0] == 1:
+                    for x in (2,5,8):
+                        buttons[x].config(background = self.control.magic_carpet)
+                    turn_label.config(text="Player One Wins!")
+                    for x in (0,8):
+                        buttons[x].config(command=lambda: do_nothing())
+                elif p2_taken[0] == 2:
+                    for x in (2,5,8):
+                        buttons[x].config(background = self.control.wave_splash)
+                    turn_label.config(text="Player Two Wins!")
+                    for x in (0,8):
+                        buttons[x].config(command=lambda: do_nothing())
+
+            if p2_taken[0] == p2_taken[4] and p2_taken[4] == p2_taken[8]:
+                if p2_taken[0] == 0:
+                    return False
+                elif p2_taken[0] == 1:
+                    for x in (0,4,8):
+                        buttons[x].config(background = self.control.magic_carpet)
+                    turn_label.config(text="Player One Wins!")
+                    for x in (0,8):
+                        buttons[x].config(command=lambda: do_nothing())
+                elif p2_taken[0] == 2:
+                    for x in (0,4,8):
+                        buttons[x].config(background = self.control.wave_splash)
+                    turn_label.config(text="Player Two Wins!")
+                    for x in (0,8):
+                        buttons[x].config(command=lambda: do_nothing())
+
+            if p2_taken[6] == p2_taken[4] and p2_taken[4] == p2_taken[2]:
+                if p2_taken[0] == 0:
+                    return False
+                elif p2_taken[0] == 1:
+                    for x in (6,4,2):
+                        buttons[x].config(background = self.control.magic_carpet)
+                    turn_label.config(text="Player One Wins!")
+                    for x in (0,8):
+                        buttons[x].config(command=lambda: do_nothing())
+                elif p2_taken[0] == 2:
+                    for x in (6,4,2):
+                        buttons[x].config(background = self.control.wave_splash)
+                    turn_label.config(text="Player Two Wins!")
+                    for x in (0,8):
+                        buttons[x].config(command=lambda: do_nothing())
+
+
+        def do_nothing():
+            pass
+
+        def home_button_press():
+            global player_turn
+            global p2_taken
+            player_turn = 1
+            for x in (0,8):
+                p2_taken[x] = 0
+            buttons[0].config(image=blank_photo_sub, background=self.control.seven_seas, command=lambda: top_left_button_press())
+            buttons[0].image = blank_photo_sub #type: ignore
+            buttons[1].config( image=blank_photo_sub, background=self.control.seven_seas, command=lambda: top_mid_button_press())
+            buttons[1].image = blank_photo_sub #type: ignore
+            buttons[2].config(image=blank_photo_sub, background=self.control.seven_seas, command=lambda: top_right_button_press())
+            buttons[2].image = blank_photo_sub #type: ignore
+            buttons[3].config(image=blank_photo_sub, background=self.control.seven_seas, command=lambda: mid_left_button_press())
+            buttons[3].image = blank_photo_sub #type: ignore
+            buttons[4].config(image=blank_photo_sub, background=self.control.seven_seas, command=lambda: mid_mid_button_press())
+            buttons[4].image = blank_photo_sub #type: ignore
+            buttons[5].config(image=blank_photo_sub, background=self.control.seven_seas, command=lambda: mid_right_button_press())
+            buttons[5].image = blank_photo_sub #type: ignore
+            buttons[6].config(image=blank_photo_sub, background=self.control.seven_seas, command=lambda: bot_left_button_press())
+            buttons[6].image = blank_photo_sub #type: ignore
+            buttons[7].config(image=blank_photo_sub, background=self.control.seven_seas, command=lambda: bot_mid_button_press())
+            buttons[7].image = blank_photo_sub #type: ignore
+            buttons[8].config(image=blank_photo_sub, background=self.control.seven_seas, command=lambda: bot_right_button_press())
+            buttons[8].image = blank_photo_sub #type: ignore
+            turn_label.config(text="Player One's Turn")
+            controller.show_frame("Welcome")
+
+        def restart_button_press():
+            global player_turn
+            global p2_taken
+            for x in (0,8):
+                p2_taken[x] = 0
+            player_turn = 1
+            buttons[0].config(image=blank_photo_sub, background=self.control.seven_seas, command=lambda: top_left_button_press())
+            buttons[0].image = blank_photo_sub #type: ignore
+            buttons[1].config( image=blank_photo_sub, background=self.control.seven_seas, command=lambda: top_mid_button_press())
+            buttons[1].image = blank_photo_sub #type: ignore
+            buttons[2].config(image=blank_photo_sub, background=self.control.seven_seas, command=lambda: top_right_button_press())
+            buttons[2].image = blank_photo_sub #type: ignore
+            buttons[3].config(image=blank_photo_sub, background=self.control.seven_seas, command=lambda: mid_left_button_press())
+            buttons[3].image = blank_photo_sub #type: ignore
+            buttons[4].config(image=blank_photo_sub, background=self.control.seven_seas, command=lambda: mid_mid_button_press())
+            buttons[4].image = blank_photo_sub #type: ignore
+            buttons[5].config(image=blank_photo_sub, background=self.control.seven_seas, command=lambda: mid_right_button_press())
+            buttons[5].image = blank_photo_sub #type: ignore
+            buttons[6].config(image=blank_photo_sub, background=self.control.seven_seas, command=lambda: bot_left_button_press())
+            buttons[6].image = blank_photo_sub #type: ignore
+            buttons[7].config(image=blank_photo_sub, background=self.control.seven_seas, command=lambda: bot_mid_button_press())
+            buttons[7].image = blank_photo_sub #type: ignore
+            buttons[8].config(image=blank_photo_sub, background=self.control.seven_seas, command=lambda: bot_right_button_press())
+            buttons[8].image = blank_photo_sub #type: ignore
+            turn_label.config(text="Player One's Turn")
+            controller.show_frame("TTT_Settings")
+            
 
 
 root = Page_Container()
@@ -596,7 +1295,7 @@ root.mainloop()
 
 
 # ideas:
-# change animation into output window, have 2 frames, update all values and pictures upon reveal button click
+# 
 #
 #
 #
@@ -604,9 +1303,6 @@ root.mainloop()
 #
 #
 #
-
-# partner with alejandro on network stuff
-# add 2 player local, 2 player end to end
 #
 #
 #
