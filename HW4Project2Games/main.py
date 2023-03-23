@@ -57,7 +57,7 @@ class Page_Container(tk.Tk):
 
         # iterating through a tuple consisting
         # of the different page layouts
-        for F, geometry in zip((Welcome, RPS_Settings, RPS_One_Choose, RPS_Two_Choose, RPS_Output, TTT_Settings, TTT_Board), ('300x300', '400x400', '300x300', '400x400', '', '250x300', '400x400')):
+        for F, geometry in zip((Welcome, RPS_Settings, RPS_One_Choose, RPS_Two_Choose, RPS_Socket, RPS_Output, TTT_Settings, TTT_Board_One_Player, TTT_Board_Two_Player), ('300x300', '400x400', '300x300', '400x400', '400x400', '', '250x300', '400x400', '400x400')):
             page_name = F.__name__
             frame = F(parent=container, controller=self)
 
@@ -139,13 +139,16 @@ class RPS_Settings(tk.Frame):
                                    background=self.control.continental_waters, relief=SUNKEN, command=lambda: one_player_button_press())
         two_player_button = Button(self, text="Two Player", font=("Arial", 24), width=15, borderwidth=5,
                                    background=self.control.seven_seas, relief=RAISED, command=lambda: two_player_button_press())
+        two_player_socket_button = Button(self, text="2 Player End2End", font=("Arial", 24), width=15, borderwidth=5,
+                                          background=self.control.seven_seas, relief=RAISED, command=lambda: two_player_e2e_button_press())
         ready_button = Button(self, text="Play!", font=("Arial", 24), width=15, borderwidth=5, background=self.control.magic_carpet, command=lambda: ready_button_press())
 
         # add to grids
         top_row.grid(column=0, row=0)
         one_player_button.grid(column=0, row=1)
         two_player_button.grid(column=0, row=2)
-        ready_button.grid(column=0, row=3)
+        two_player_socket_button.grid(column=0, row=3)
+        ready_button.grid(column=0, row=4)
 
         global rps_players
         rps_players = 1
@@ -155,12 +158,21 @@ class RPS_Settings(tk.Frame):
             rps_players = 1
             one_player_button.config(relief=SUNKEN, background=self.control.continental_waters)
             two_player_button.config(relief=RAISED, background=self.control.seven_seas)
+            two_player_socket_button.config(relief=RAISED, background=self.control.seven_seas)
 
         def two_player_button_press():
             global rps_players
             rps_players = 2
             one_player_button.config(relief=RAISED, background=self.control.seven_seas)
             two_player_button.config(relief=SUNKEN, background=self.control.continental_waters)
+            two_player_socket_button.config(relief=RAISED, background=self.control.seven_seas)
+
+        def two_player_e2e_button_press():
+            global rps_players
+            rps_players = 3
+            one_player_button.config(relief=RAISED, background=self.control.seven_seas)
+            two_player_button.config(relief=RAISED, background=self.control.seven_seas)
+            two_player_socket_button.config(relief=SUNKEN, background=self.control.continental_waters)
 
         def ready_button_press():
             if (rps_players == 1):
@@ -232,6 +244,77 @@ class RPS_Two_Choose(tk.Frame):
         # helps with dynamic resizing
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
+        self.grid_rowconfigure(1, weight=1)
+        self.grid_columnconfigure(1, weight=1)
+        self.grid_rowconfigure(2, weight=1)
+        self.grid_rowconfigure(3, weight=1)
+        self.grid_rowconfigure(4, weight=1)
+
+        choose_label = Label(self, text="Make your choice!", font=self.control.bold_font,
+                             foreground=self.control.seven_seas, background=self.control.purple_illusion, padx=5, pady=5)
+        p1_rock_button = Button(self, text="Rock", relief=SUNKEN, background=self.control.continental_waters,
+                                activebackground=self.control.continental_waters, command=lambda: p1_rock_button_press())
+        p1_paper_button = Button(self, text="Paper", relief=SUNKEN, background=self.control.continental_waters,
+                                 activebackground=self.control.continental_waters, command=lambda: p1_paper_button_press())
+        p1_scissor_button = Button(self, text="Scissor", relief=SUNKEN, background=self.control.continental_waters,
+                                   activebackground=self.control.continental_waters, command=lambda: p1_scissor_button_press())
+        p2_rock_button = Button(self, text="Rock", relief=SUNKEN, background=self.control.continental_waters,
+                                activebackground=self.control.continental_waters, command=lambda: p2_rock_button_press())
+        p2_paper_button = Button(self, text="Paper", relief=SUNKEN, background=self.control.continental_waters,
+                                 activebackground=self.control.continental_waters, command=lambda: p2_paper_button_press())
+        p2_scissor_button = Button(self, text="Scissor", relief=SUNKEN, background=self.control.continental_waters,
+                                   activebackground=self.control.continental_waters, command=lambda: p2_scissor_button_press())
+        shoot_button = Button(self, text="Shoot!", relief=SUNKEN, background=self.control.magic_carpet, command=lambda: shoot_button_press())
+
+        choose_label.grid(column=0, columnspan=2, row=0, sticky=NSEW)
+        p1_rock_button.grid(column=0, row=1, sticky=NSEW)
+        p1_paper_button.grid(column=0, row=2, sticky=NSEW)
+        p1_scissor_button.grid(column=0, row=3, sticky=NSEW)
+        p2_rock_button.grid(column=1, row=1, sticky=NSEW)
+        p2_paper_button.grid(column=1, row=2, sticky=NSEW)
+        p2_scissor_button.grid(column=1, row=3, sticky=NSEW)
+        shoot_button.grid(column=0, columnspan=2, row=4, sticky=NSEW)
+
+        global player_one_choice
+        player_one_choice = 0
+
+        global player_two_choice
+        player_two_choice = 0
+
+        def p1_rock_button_press():
+            global player_one_choice
+            player_one_choice = 1
+
+        def p1_paper_button_press():
+            global player_one_choice
+            player_one_choice = 2
+
+        def p1_scissor_button_press():
+            global player_one_choice
+            player_one_choice = 3
+
+        def p2_rock_button_press():
+            global player_two_choice
+            player_two_choice = 1
+
+        def p2_paper_button_press():
+            global player_two_choice
+            player_two_choice = 2
+
+        def p2_scissor_button_press():
+            global player_two_choice
+            player_two_choice = 3
+
+        def shoot_button_press():
+            if (player_one_choice != 0 and player_two_choice != 0):
+                controller.show_frame("RPS_Output")
+
+
+class RPS_Socket(tk.Frame):
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self, parent)
+        self.control = Controller_Class()
+        self.config(padx=5, pady=5, background=self.control.purple_illusion)
 
 
 class RPS_Output(tk.Frame):
@@ -371,11 +454,19 @@ class RPS_Output(tk.Frame):
         play_again_button.grid(row=4, column=3, sticky=NSEW)
 
         def home_button_press():
+            global player_one_choice
+            global player_two_choice
+            player_one_choice = 0
+            player_two_choice = 0
             controller.show_frame("Welcome")
             result_page.grid_forget()
             animation.grid()
 
         def restart_button_press():
+            global player_one_choice
+            global player_two_choice
+            player_one_choice = 0
+            player_two_choice = 0
             controller.show_frame("RPS_Settings")
             result_page.grid_forget()
             animation.grid()
@@ -465,7 +556,20 @@ class TTT_Settings(tk.Frame):
             controller.show_frame("Welcome")
 
 
-class TTT_Board(tk.Frame):
+class TTT_Board_One_Player(tk.Frame):
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self, parent)
+        self.control = Controller_Class()
+        self.config(padx=5, pady=5)
+
+        # helps with dynamic resizing
+        self.grid_rowconfigure(0, weight=1)
+        self.grid_columnconfigure(0, weight=1)
+
+        board = tk.Frame(self)
+
+
+class TTT_Board_Two_Player(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         self.control = Controller_Class()
