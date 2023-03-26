@@ -8,6 +8,8 @@ from tkinter import ttk
 import random
 import os
 import time
+from flask import Flask
+
 
 
 '''
@@ -21,6 +23,18 @@ Wave Splash - #c7e2e7
 
 '''
 
+#Create flask webhost
+app = Flask(__name__)
+
+@app.route("/")
+def hello_world():
+    return "<p>Hello, World!</p>"
+
+def get_choice():
+    player_two_choice = 0
+    print(player_two_choice)
+    
+    return player_two_choice
 
 class Controller_Class:
     def __init__(self):
@@ -139,7 +153,7 @@ class RPS_Settings(tk.Frame):
                                    background=self.control.continental_waters, relief=SUNKEN, command=lambda: one_player_button_press())
         two_player_button = Button(self, text="Two Player", font=("Arial", 24), width=15, borderwidth=5,
                                    background=self.control.seven_seas, relief=RAISED, command=lambda: two_player_button_press())
-        two_player_socket_button = Button(self, text="2 Player End2End", font=("Arial", 24), width=15, borderwidth=5,
+        two_player_socket_button = Button(self, text="2 Player P2P", font=("Arial", 24), width=15, borderwidth=5,
                                           background=self.control.seven_seas, relief=RAISED, command=lambda: two_player_e2e_button_press())
         ready_button = Button(self, text="Play!", font=("Arial", 24), width=15, borderwidth=5, background=self.control.magic_carpet, command=lambda: ready_button_press())
 
@@ -320,6 +334,8 @@ class RPS_Socket(tk.Frame):
         tk.Frame.__init__(self, parent)
         self.control = Controller_Class()
         self.config(padx=5, pady=5, background=self.control.purple_illusion)
+
+        
 
 
 class RPS_Output(tk.Frame):
@@ -841,10 +857,6 @@ class TTT_Board_One_Player(tk.Frame):
                 elif taken[0] == 2:
                     turn_label.config(text="Player 2 Wins!")
                     
-            
-
-            
-            
 
 
 class TTT_Board_Two_Player(tk.Frame):
@@ -1292,7 +1304,6 @@ class TTT_Board_Two_Player(tk.Frame):
 
 root = Page_Container()
 root.mainloop()
-
 
 # ideas:
 # 
