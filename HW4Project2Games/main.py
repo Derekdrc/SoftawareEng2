@@ -8,7 +8,9 @@ from tkinter import ttk
 import random
 import os
 import time
-from flask import Flask
+from flask import Flask, request, render_template
+import threading
+from multiprocessing import Process
 
 
 
@@ -23,12 +25,9 @@ Wave Splash - #c7e2e7
 
 '''
 
-#Create flask webhost
-app = Flask(__name__)
 
-@app.route("/")
-def hello_world():
-    return "<p>Hello, World!</p>"
+
+
 
 def get_choice():
     player_two_choice = 0
@@ -193,6 +192,9 @@ class RPS_Settings(tk.Frame):
                 controller.show_frame("RPS_One_Choose")
             elif (rps_players == 2):
                 controller.show_frame("RPS_Two_Choose")
+            elif(rps_players == 3):
+                controller.show_frame("RPS_Socket")
+                
 
 
 class RPS_One_Choose(tk.Frame):
@@ -1300,10 +1302,26 @@ class TTT_Board_Two_Player(tk.Frame):
             turn_label.config(text="Player One's Turn")
             controller.show_frame("TTT_Settings")
             
+def flask_thread():
+    #Create flask webhost
+    app = Flask(__name__)
 
+    #flask --app main run (--host 0.0.0.0) to host, with optional outside exposure
+    @app.route("/")
+    def flask_rps(name=None):
+        return render_template('flaskhtml.html', name=name)
+    app.run()
 
-root = Page_Container()
-root.mainloop()
+def main_loop_thread():
+    root = Page_Container()
+    root.mainloop()
+
+if __name__ == '__main__':
+    server = Process(target=flask_thread)
+    server.start()
+    main_thread = Process(target=main_loop_thread)
+    main_thread.start()
+
 
 # ideas:
 # 
