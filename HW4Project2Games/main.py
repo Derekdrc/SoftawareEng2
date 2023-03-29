@@ -21,7 +21,6 @@ Seven Seas - #446073
 Continental Waters - #9bc5cc
 Quick-Freeze - #c3dfe4
 Wave Splash - #c7e2e7
-
 '''
 
 
@@ -69,7 +68,7 @@ class Page_Container(tk.Tk):
 
         # iterating through a tuple consisting
         # of the different page layouts
-        for F, geometry in zip((Welcome, RPS_Settings, RPS_One_Choose, RPS_Two_Choose, RPS_Socket, RPS_Output, TTT_Settings, TTT_Board_One_Player, TTT_Board_Two_Player), ('300x300', '400x400', '300x300', '400x400', '400x400', '', '250x300', '400x400', '400x400')):
+        for F, geometry in zip((Welcome, RPS_Settings, RPS_One_Choose, RPS_Two_Choose, RPS_Socket, RPS_Output, TTT_Settings, TTT_Board_One_Player, TTT_Board_Two_Player), ('300x300', '400x400', '300x300', '400x400', '490x150', '', '250x300', '400x400', '400x400')):
             page_name = F.__name__
             frame = F(parent=container, controller=self)
 
@@ -187,7 +186,6 @@ class RPS_Settings(tk.Frame):
             two_player_socket_button.config(relief=SUNKEN, background=self.control.continental_waters)
 
         def ready_button_press():
-            print(f"buton pressed {choice}")
             if (rps_players == 1):
                 controller.show_frame("RPS_One_Choose")
             elif (rps_players == 2):
@@ -337,6 +335,59 @@ class RPS_Socket(tk.Frame):
         self.control = Controller_Class()
         self.config(padx=5, pady=5, background=self.control.purple_illusion)
 
+         # helps with dynamic resizing
+        self.grid_rowconfigure(0, weight=1)
+        self.grid_columnconfigure(0, weight=1)
+        self.config(background=self.control.purple_illusion)
+
+        choose_label = Label(self, text="P1 Make your choice! P2 go to 127.0.0.1:5000 in your browser!", font=self.control.normal_font,
+                             foreground=self.control.seven_seas, background=self.control.purple_illusion, padx=5, pady=5)
+        rock_button = Button(self, text="Rock", relief=SUNKEN, background=self.control.continental_waters, command=lambda: rock_button_press())
+        paper_button = Button(self, text="Paper", relief=RAISED, background=self.control.seven_seas, command=lambda: paper_button_press())
+        scissor_button = Button(self, text="Scissor", relief=RAISED, background=self.control.seven_seas, command=lambda: scissor_button_press())
+        shoot_button = Button(self, text="Shoot!", relief=RAISED, background=self.control.magic_carpet, command=lambda: shoot_button_press())
+
+        choose_label.grid(column=0, row=0, sticky=NSEW)
+        rock_button.grid(column=0, row=1, sticky=NSEW)
+        paper_button.grid(column=0, row=2, sticky=NSEW)
+        scissor_button.grid(column=0, row=3, sticky=NSEW)
+        shoot_button.grid(column=0, row=4, sticky=NSEW)
+
+        global player_one_choice
+        player_one_choice = 1
+
+        def rock_button_press():
+            global player_one_choice
+            player_one_choice = 1
+            rock_button.config(relief=SUNKEN, background=self.control.continental_waters)
+            paper_button.config(relief=RAISED, background=self.control.seven_seas)
+            scissor_button.config(relief=RAISED, background=self.control.seven_seas)
+
+        def paper_button_press():
+            global player_one_choice
+            player_one_choice = 2
+            rock_button.config(relief=RAISED, background=self.control.seven_seas)
+            paper_button.config(relief=SUNKEN, background=self.control.continental_waters)
+            scissor_button.config(relief=RAISED, background=self.control.seven_seas)
+
+        def scissor_button_press():
+            global player_one_choice
+            player_one_choice = 3
+            rock_button.config(relief=RAISED, background=self.control.seven_seas)
+            paper_button.config(relief=RAISED, background=self.control.seven_seas)
+            scissor_button.config(relief=SUNKEN, background=self.control.continental_waters)
+
+        def shoot_button_press():
+            global player_one_choice
+            global player_two_choice
+            
+            player_two_choice = app.config['choice'].value
+            if(player_one_choice == 0):
+                player_one_choice = 1
+                controller.show_frame("RPS_Output")
+            else:
+                controller.show_frame("RPS_Output")
+
         
 
 
@@ -477,19 +528,19 @@ class RPS_Output(tk.Frame):
         play_again_button.grid(row=4, column=3, sticky=NSEW)
 
         def home_button_press():
-            global player_one_choice
-            global player_two_choice
-            player_one_choice = 0
-            player_two_choice = 0
+            #global player_one_choice
+            #global player_two_choice
+            #player_one_choice = 0
+            #player_two_choice = 0
             controller.show_frame("Welcome")
             result_page.grid_forget()
             animation.grid()
 
         def restart_button_press():
-            global player_one_choice
-            global player_two_choice
-            player_one_choice = 0
-            player_two_choice = 0
+            #global player_one_choice
+            #global player_two_choice
+            #player_one_choice = 0
+            #player_two_choice = 0
             controller.show_frame("RPS_Settings")
             result_page.grid_forget()
             animation.grid()
@@ -1486,6 +1537,7 @@ app = Flask(__name__)
 # User choice within Flask
 app.config['choice'] = multiprocessing.Value('i', 0)
 
+global choice
 # User choice in memory for everything
 choice = multiprocessing.Value('i', 0)
 
@@ -1505,40 +1557,19 @@ def run():
     app.run(use_reloader=False)
 #
 
-def value_updater():
-    """Continuously syncs the on memory choice with the Flask choice"""
-
-    global choice
-    
-    while True:
-        choice = app.config['choice']
-        time.sleep(1) # Update every second
 
 if __name__ == '__main__':
 
     # Create two threads for both Flask and the updater to run continuously
     flask = threading.Thread(target=run)
-    value_updater = threading.Thread(target=value_updater)
+    flask.setDaemon(True)
+    #value_update = threading.Thread(target=value_updater)
+
 
     # Start threads
     flask.start()
-    value_updater.start()
+    #value_update.start()
     
     # Start Tkinter
     root = Page_Container()
     root.mainloop()
-
-
-
-# ideas:
-# 
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
