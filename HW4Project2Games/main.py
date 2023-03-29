@@ -2,16 +2,16 @@
 name: Derek D'Arcy
 Description: This program is the gui for project 2 which will have RPS and TICTACTOE
 """
+import multiprocessing
+import os
+import random
+import threading
+import time
 import tkinter as tk
 from tkinter import *
 from tkinter import ttk
-import random
-import os
-import time
-import threading
-import random
-import time
 
+from flask import Flask, render_template, request
 
 '''
 Purple Illusion - #beadfe
@@ -1479,42 +1479,52 @@ class TTT_Board_Two_Player(tk.Frame):
     # root.mainloop()
 
 
-from flask import Flask, request, render_template
-import time
-import multiprocessing
+# Flask Configuration
 
-choice = multiprocessing.Value('i', 0)
 app = Flask(__name__)
+
+# User choice within Flask
 app.config['choice'] = multiprocessing.Value('i', 0)
-#flask --app main run (--host 0.0.0.0) to host, with optional outside exposure
+
+# User choice in memory for everything
+choice = multiprocessing.Value('i', 0)
 
 @app.route("/", methods=['GET', 'POST'])
 def flask_rps():
+    """Updates Flask choice when form is submitted"""
+
     if request.method == 'POST':
         choice = request.form.get('rps-list-choices', -1)
         app.config['choice'].value = int(choice)
 
     return render_template('flaskhtml.html')
 
+def run():
+    """Runs Flask Server"""
+
+    app.run(use_reloader=False)
+#
+
 def value_updater():
+    """Continuously syncs the on memory choice with the Flask choice"""
+
     global choice
+    
     while True:
         choice = app.config['choice']
-        time.sleep(1)
-
-
-def run():
-    app.run(use_reloader=False)
+        time.sleep(1) # Update every second
 
 if __name__ == '__main__':
-    # main_thread = Process(target=main_loop_thread)
-    # main_thread.start()
+
+    # Create two threads for both Flask and the updater to run continuously
     flask = threading.Thread(target=run)
     value_updater = threading.Thread(target=value_updater)
 
+    # Start threads
     flask.start()
     value_updater.start()
     
+    # Start Tkinter
     root = Page_Container()
     root.mainloop()
 
