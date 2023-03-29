@@ -7,6 +7,7 @@ import os
 import random
 import threading
 import time
+import math
 import tkinter as tk
 from tkinter import *
 from tkinter import ttk
@@ -678,6 +679,7 @@ class TTT_Settings(tk.Frame):
                 elif(ttt_mode == 2):
                     controller.show_frame("TTT_Board_One_Player")
 
+
                 
 class TTT_Board_One_Player(tk.Frame):
     def __init__(self, parent, controller):
@@ -881,6 +883,10 @@ class TTT_Board_One_Player(tk.Frame):
             buttons[7].config(image=X_photo_sub, command=lambda: None)
             buttons[7].image = X_photo_sub #type: ignore
             check_winner()
+            counter = 0
+            for x in taken:
+                if taken[x] != 0:
+                    counter = counter +1
             computer_turn()
 
         def bot_right_button_press():
@@ -891,8 +897,63 @@ class TTT_Board_One_Player(tk.Frame):
             check_winner()
             computer_turn()
 
+        def minimax(taken_ai, depth, is_maximizing):
+            if check_winner_ai(taken_ai) != None:
+                return ai_score(taken_ai, depth)
+
+            if is_maximizing:
+                best_score = -math.inf
+                for i in range(9):
+                    if taken_ai[i] == 0:
+                        taken_ai[i] = 2
+                        score = minimax(taken_ai, depth+1, False)
+                        taken_ai[i] = 0
+                        best_score = max(score, best_score)
+                return best_score
+            else:
+                best_score = math.inf
+                for i in range(9):
+                    if taken_ai[i] == 0:
+                        taken_ai[i] = 1
+                        score = minimax(taken_ai, depth+1, True)
+                        taken_ai[i] = 0
+                        best_score = min(score, best_score)
+                return best_score
+
+        def get_best_move(taken_ai):
+            best_score = -math.inf
+            best_move = 0
+            for i in range(9):
+                if taken_ai[i] == 0:
+                    taken_ai[i] = 2
+                    score = minimax(taken_ai, 0, False)
+                    taken_ai[i] = 0
+                    if score > best_score:
+                        best_score = score
+                        best_move = i
+            return best_move
+
+        def check_winner_ai(taken_ai):
+            win_positions = [(0, 1, 2), (3, 4, 5), (6, 7, 8), (0, 3, 6), (1, 4, 7), (2, 5, 8), (0, 4, 8), (2, 4, 6)]
+            for pos in win_positions:
+                if taken_ai[pos[0]] == taken_ai[pos[1]] == taken_ai[pos[2]] and taken_ai[pos[0]] != 0:
+                    return taken_ai[pos[0]]
+            if 0 not in taken_ai:
+                return 0
+            return None
+
+        def ai_score(taken_ai, depth):
+            result = check_winner_ai(taken_ai)
+            if result == 2:
+                return 10 - depth
+            elif result == 1:
+                return depth - 10
+            else:
+                return 0
+
         def computer_turn():
             global ttt_mode
+            global taken
             if ttt_mode == 1:
                 #easy mode
                 time.sleep(0.5)
@@ -917,7 +978,23 @@ class TTT_Board_One_Player(tk.Frame):
                     computers_turn = False
             elif ttt_mode == 2:
                 #hard mode
-                pass
+                ai_turn = True
+                ai_counter = 0
+                for x in taken:
+                    if taken[x] != 0:
+                        ai_counter = ai_counter + 1
+                if ai_counter >= 8:
+                    ai_turn = False
+                time.sleep(0.3)
+                if solo_game_over == True:
+                    ai_turn = False
+                while ai_turn:
+                    ai_best_move = get_best_move(taken)
+                    taken[ai_best_move] = 2 
+                    buttons[ai_best_move].config(image=O_photo_sub, command=lambda: None)
+                    check_winner()
+                    ai_turn = False
+                
 
         def do_nothing():
             pass
@@ -1229,7 +1306,7 @@ class TTT_Board_Two_Player(tk.Frame):
             global player_turn
             global p2_taken
             if player_turn == 1:    
-                p2_taken[4] = 2
+                p2_taken[4] = 1
                 buttons[4].config(image=X_photo_sub, command=lambda: None)
                 buttons[4].image = X_photo_sub #type: ignore
                 player_turn = 2
