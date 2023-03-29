@@ -10,7 +10,10 @@ import os
 import time
 from flask import Flask, request, render_template
 import threading
-from multiprocessing import Process
+from multiprocessing import Process, Value, Array
+import random
+import socket
+import time
 
 
 
@@ -617,7 +620,14 @@ class TTT_Settings(tk.Frame):
         
         def play_button_press():
             global ttt_players
+            global ttt_mode
             if(ttt_players==2):
+                global p2_taken
+                global taken
+                global solo_game_over
+                solo_game_over = False
+                taken = [0,0,0,0,0,0,0,0,0]
+                p2_taken = [0,0,0,0,0,0,0,0,0]
                 controller.show_frame("TTT_Board_Two_Player")
             elif(ttt_players==1):
                 if(ttt_mode == 1):
@@ -711,9 +721,14 @@ class TTT_Board_One_Player(tk.Frame):
 
         display.grid(column=0, columnspan=3, row=4)
 
+        global solo_game_over 
+        solo_game_over = False
+
         def home_button_press():
             global taken
             taken = [0,0,0,0,0,0,0,0,0]
+            global solo_game_over
+            solo_game_over = False
             buttons[0].config(image=blank_photo_sub, background=self.control.seven_seas, command=lambda: top_left_button_press())
             buttons[0].image = blank_photo_sub #type: ignore
             buttons[1].config( image=blank_photo_sub, background=self.control.seven_seas, command=lambda: top_mid_button_press())
@@ -738,6 +753,8 @@ class TTT_Board_One_Player(tk.Frame):
         def restart_button_press():
             global taken
             taken = [0,0,0,0,0,0,0,0,0]
+            global solo_game_over
+            solo_game_over = False
             buttons[0].config(image=blank_photo_sub, background=self.control.seven_seas, command=lambda: top_left_button_press())
             buttons[0].image = blank_photo_sub #type: ignore
             buttons[1].config( image=blank_photo_sub, background=self.control.seven_seas, command=lambda: top_mid_button_press())
@@ -832,32 +849,176 @@ class TTT_Board_One_Player(tk.Frame):
             computer_turn()
 
         def computer_turn():
-            time.sleep(0.5)
-            computers_turn = True
-            counter = 0
-            for x in taken:
-                if taken[x] !=0:
-                    counter+=1
-            if counter >=8:
-                computers_turn = False
-                turn_label.config(text="Cat Game!")
-            while(computers_turn):
-                target = random.randint(0,8)
-                while (taken[target] != 0):
+            global ttt_mode
+            if ttt_mode == 1:
+                #easy mode
+                time.sleep(0.5)
+                computers_turn = True
+                counter = 0
+                for x in taken:
+                    if taken[x] !=0:
+                        counter+=1
+                if counter >=8:
+                    computers_turn = False
+                    turn_label.config(text="Cat Game!")
+                global solo_game_over
+                if solo_game_over == True:
+                    computers_turn = False
+                while(computers_turn):
                     target = random.randint(0,8)
-                taken[target] = 2
-                buttons[target].config(image=O_photo_sub, command=lambda: None)
-                check_winner()
-                computers_turn = False
+                    while (taken[target] != 0):
+                        target = random.randint(0,8)
+                    taken[target] = 2
+                    buttons[target].config(image=O_photo_sub, command=lambda: None)
+                    check_winner()
+                    computers_turn = False
+            elif ttt_mode == 2:
+                #hard mode
+                pass
+
+        def do_nothing():
+            pass
 
         def check_winner():
-            if(taken[0] == taken[1] == taken[2]):
-                if(taken[0] == 0 or taken[1] == 0 or taken[2] == 0):
-                    turn_label.config(text="Continue Playing")
-                if taken[0] == 1:
-                    turn_label.config(text="Player 1 Wins!")
-                elif taken[0] == 2:
-                    turn_label.config(text="Player 2 Wins!")
+            '''
+            012
+            345
+            678
+            036
+            147
+            258
+            048
+            246
+            '''
+            global taken
+            global solo_game_over
+            #012
+            if taken[0] == 1 and taken[1] == 1 and taken[2] == 1:
+                solo_game_over = True
+                for x in (0,1,2):
+                    buttons[x].config(background = self.control.magic_carpet)
+                turn_label.config(text="Player One Wins!")
+                for x in (0,8):
+                    buttons[x].config(command= lambda: do_nothing())
+            elif taken[0] == 2 and taken[1] == 2 and taken[2] == 2:
+                solo_game_over = True
+                for x in (0,1,2):
+                    buttons[x].config(background = self.control.magic_carpet)
+                turn_label.config(text="Player Two Wins!")
+                for x in (0,8):
+                    buttons[x].config(command= lambda: do_nothing())
+
+            #345
+            if taken[3] == 1 and taken[4] == 1 and taken[5] == 1:
+                solo_game_over = True
+                for x in (3,4,5):
+                    buttons[x].config(background = self.control.magic_carpet)
+                turn_label.config(text="Player One Wins!")
+                for x in (0,8):
+                    buttons[x].config(command= lambda: do_nothing())
+            elif taken[3] == 2 and taken[4] == 2 and taken[5] == 2:
+                solo_game_over = True
+                for x in (3,4,5):
+                    buttons[x].config(background = self.control.magic_carpet)
+                turn_label.config(text="Player Two Wins!")
+                for x in (0,8):
+                    buttons[x].config(command= lambda: do_nothing())
+
+            #678
+            if taken[6] == 1 and taken[7] == 1 and taken[8] == 1:
+                solo_game_over = True
+                for x in (6,7,8):
+                    buttons[x].config(background = self.control.magic_carpet)
+                turn_label.config(text="Player One Wins!")
+                for x in (0,8):
+                    buttons[x].config(command= lambda: do_nothing())
+            elif p2_taken[6] == 2 and p2_taken[7] == 2 and p2_taken[8] == 2:
+                solo_game_over = True
+                for x in (6,7,8):
+                    buttons[x].config(background = self.control.magic_carpet)
+                turn_label.config(text="Player Two Wins!")
+                for x in (0,8):
+                    buttons[x].config(command= lambda: do_nothing())
+
+            #036
+            if taken[0] == 1 and taken[3] == 1 and taken[6] == 1:
+                solo_game_over = True
+                for x in (0,3,6):
+                    buttons[x].config(background = self.control.magic_carpet)
+                turn_label.config(text="Player One Wins!")
+                for x in (0,8):
+                    buttons[x].config(command= lambda: do_nothing())
+            elif taken[0] == 2 and taken[3] == 2 and taken[6] == 2:
+                solo_game_over = True
+                for x in (0,3,6):
+                    buttons[x].config(background = self.control.magic_carpet)
+                turn_label.config(text="Player Two Wins!")
+                for x in (0,8):
+                    buttons[x].config(command= lambda: do_nothing())
+
+            #147
+            if taken[1] == 1 and taken[4] == 1 and taken[7] == 1:
+                solo_game_over = True
+                for x in (1,4,7):
+                    buttons[x].config(background = self.control.magic_carpet)
+                turn_label.config(text="Player One Wins!")
+                for x in (0,8):
+                    buttons[x].config(command= lambda: do_nothing())
+            elif taken[1] == 2 and taken[4] == 2 and taken[7] == 2:
+                solo_game_over = True
+                for x in (1,4,7):
+                    buttons[x].config(background = self.control.magic_carpet)
+                turn_label.config(text="Player Two Wins!")
+                for x in (0,8):
+                    buttons[x].config(command= lambda: do_nothing())
+
+            #258
+            if taken[2] == 1 and taken[5] == 1 and taken[8] == 1:
+                solo_game_over = True
+                for x in (2,5,8):
+                    buttons[x].config(background = self.control.magic_carpet)
+                turn_label.config(text="Player One Wins!")
+                for x in (0,8):
+                    buttons[x].config(command= lambda: do_nothing())
+            elif taken[2] == 2 and taken[5] == 2 and taken[8] == 2:
+                solo_game_over = True
+                for x in (2,5,8):
+                    buttons[x].config(background = self.control.magic_carpet)
+                turn_label.config(text="Player Two Wins!")
+                for x in (0,8):
+                    buttons[x].config(command= lambda: do_nothing())
+
+            #048
+            if taken[0] == 1 and taken[4] == 1 and taken[8] == 1:
+                solo_game_over = True
+                for x in (0,4,8):
+                    buttons[x].config(background = self.control.magic_carpet)
+                turn_label.config(text="Player One Wins!")
+                for x in (0,8):
+                    buttons[x].config(command= lambda: do_nothing())
+            elif taken[0] == 2 and taken[4] == 2 and taken[8] == 2:
+                solo_game_over = True
+                for x in (0,4,8):
+                    buttons[x].config(background = self.control.magic_carpet)
+                turn_label.config(text="Player Two Wins!")
+                for x in (0,8):
+                    buttons[x].config(command= lambda: do_nothing())
+
+            #246
+            if taken[2] == 1 and taken[4] == 1 and taken[6] == 1:
+                solo_game_over = True
+                for x in (2,4,6):
+                    buttons[x].config(background = self.control.magic_carpet)
+                turn_label.config(text="Player One Wins!")
+                for x in (0,8):
+                    buttons[x].config(command= lambda: do_nothing())
+            elif taken[2] == 2 and taken[4] == 2 and taken[6] == 2:
+                solo_game_over = True
+                for x in (2,4,6):
+                    buttons[x].config(background = self.control.magic_carpet)
+                turn_label.config(text="Player Two Wins!")
+                for x in (0,8):
+                    buttons[x].config(command= lambda: do_nothing())
                     
 
 
@@ -964,8 +1125,6 @@ class TTT_Board_Two_Player(tk.Frame):
                 buttons[0].image = O_photo_sub #type: ignore
                 player_turn = 1
                 turn_label.config(text= "Player One's Turn")
-            for x in p2_taken:
-                print(x)
             check_winner()
             
         
@@ -1115,134 +1274,133 @@ class TTT_Board_Two_Player(tk.Frame):
 
         def check_winner():
             global p2_taken
-            if p2_taken[0] == p2_taken[1] and p2_taken[1] == p2_taken[2]:
-                if p2_taken[0] == 0 or p2_taken[1] == 0 or p2_taken[2] == 0:
-                    pass
-                elif p2_taken[0] == 1:
-                    for x in (0,1,2):
-                        buttons[x].config(background = self.control.magic_carpet)
-                    turn_label.config(text="Player One Wins!")
-                    for x in (0,8):
-                        buttons[x].config(command=lambda: do_nothing())
-                elif p2_taken[0] == 2:
-                    for x in (0,1,2):
-                        buttons[x].config(background = self.control.wave_splash)
-                    turn_label.config(text="Player Two Wins!")
-                    for x in (0,8):
-                        buttons[x].config(command=lambda: do_nothing())
+            for x in p2_taken:
+                print(x)
 
-            if p2_taken[3] == p2_taken[4] and p2_taken[4] == p2_taken[5]:
-                if p2_taken[0] == 0:
-                    return False
-                elif p2_taken[0] == 1:
-                    for x in (3,4,5):
-                        buttons[x].config(background = self.control.magic_carpet)
-                    turn_label.config(text="Player One Wins!")
-                    for x in (0,8):
-                        buttons[x].config(command=lambda: do_nothing())
-                elif p2_taken[0] == 2:
-                    for x in (3,4,5):
-                        buttons[x].config(background = self.control.wave_splash)
-                    turn_label.config(text="Player Two Wins!")
-                    print("player 2")
-                    for x in (0,8):
-                        buttons[x].config(command=lambda: do_nothing())
+            print ('')
+            '''
+            012
+            345
+            678
+            036
+            147
+            258
+            048
+            246
+            '''
             
-            if p2_taken[6] == p2_taken[7] and p2_taken[7] == p2_taken[8]:
-                if p2_taken[0] == 0:
-                    return False
-                elif p2_taken[0] == 1:
-                    for x in (6,7,8):
-                        buttons[x].config(background = self.control.magic_carpet)
-                    turn_label.config(text="Player One Wins!")
-                    for x in (0,8):
-                        buttons[x].config(command=lambda: do_nothing())
-                elif p2_taken[0] == 2:
-                    for x in (6,7,8):
-                        buttons[x].config(background = self.control.wave_splash)
-                    turn_label.config(text="Player Two Wins!")
-                    for x in (0,8):
-                        buttons[x].config(command=lambda: do_nothing())
 
-            if p2_taken[0] == p2_taken[3] and p2_taken[3] == p2_taken[6]:
-                if p2_taken[0] == 0:
-                    return False
-                elif p2_taken[0] == 1:
-                    for x in (0,3,6):
-                        buttons[x].config(background = self.control.magic_carpet)
-                    turn_label.config(text="Player One Wins!")
-                    for x in (0,8):
-                        buttons[x].config(command=lambda: do_nothing())
-                elif p2_taken[0] == 2:
-                    for x in (0,3,6):
-                        buttons[x].config(background = self.control.wave_splash)
-                    turn_label.config(text="Player Two Wins!")
-                    for x in (0,8):
-                        buttons[x].config(command=lambda: do_nothing())
+            #012
+            if p2_taken[0] == 1 and p2_taken[1] == 1 and p2_taken[2] == 1:
+                for x in (0,1,2):
+                    buttons[x].config(background = self.control.magic_carpet)
+                turn_label.config(text="Player One Wins!")
+                for x in (0,8):
+                    buttons[x].config(command= lambda: do_nothing())
+            elif p2_taken[0] == 2 and p2_taken[1] == 2 and p2_taken[2] == 2:
+                for x in (0,1,2):
+                    buttons[x].config(background = self.control.magic_carpet)
+                turn_label.config(text="Player Two Wins!")
+                for x in (0,8):
+                    buttons[x].config(command= lambda: do_nothing())
 
-            if p2_taken[1] == p2_taken[4] and p2_taken[4] == p2_taken[7]:
-                if p2_taken[0] == 0:
-                    return False
-                elif p2_taken[0] == 1:
-                    for x in (1,4,7):
-                        buttons[x].config(background = self.control.magic_carpet)
-                    turn_label.config(text="Player One Wins!")
-                    for x in (0,8):
-                        buttons[x].config(command=lambda: do_nothing())
-                elif p2_taken[0] == 2:
-                    for x in (1,4,7):
-                        buttons[x].config(background = self.control.wave_splash)
-                    turn_label.config(text="Player Two Wins!")
-                    for x in (0,8):
-                        buttons[x].config(command=lambda: do_nothing())
+            #345
+            if p2_taken[3] == 1 and p2_taken[4] == 1 and p2_taken[5] == 1:
+                for x in (3,4,5):
+                    buttons[x].config(background = self.control.magic_carpet)
+                turn_label.config(text="Player One Wins!")
+                for x in (0,8):
+                    buttons[x].config(command= lambda: do_nothing())
+            elif p2_taken[3] == 2 and p2_taken[4] == 2 and p2_taken[5] == 2:
+                for x in (3,4,5):
+                    buttons[x].config(background = self.control.magic_carpet)
+                turn_label.config(text="Player Two Wins!")
+                for x in (0,8):
+                    buttons[x].config(command= lambda: do_nothing())
 
-            if p2_taken[2] == p2_taken[5] and p2_taken[5] == p2_taken[8]:
-                if p2_taken[0] == 0:
-                    return False
-                elif p2_taken[0] == 1:
-                    for x in (2,5,8):
-                        buttons[x].config(background = self.control.magic_carpet)
-                    turn_label.config(text="Player One Wins!")
-                    for x in (0,8):
-                        buttons[x].config(command=lambda: do_nothing())
-                elif p2_taken[0] == 2:
-                    for x in (2,5,8):
-                        buttons[x].config(background = self.control.wave_splash)
-                    turn_label.config(text="Player Two Wins!")
-                    for x in (0,8):
-                        buttons[x].config(command=lambda: do_nothing())
+            #678
+            if p2_taken[6] == 1 and p2_taken[7] == 1 and p2_taken[8] == 1:
+                for x in (6,7,8):
+                    buttons[x].config(background = self.control.magic_carpet)
+                turn_label.config(text="Player One Wins!")
+                for x in (0,8):
+                    buttons[x].config(command= lambda: do_nothing())
+            elif p2_taken[6] == 2 and p2_taken[7] == 2 and p2_taken[8] == 2:
+                for x in (6,7,8):
+                    buttons[x].config(background = self.control.magic_carpet)
+                turn_label.config(text="Player Two Wins!")
+                for x in (0,8):
+                    buttons[x].config(command= lambda: do_nothing())
 
-            if p2_taken[0] == p2_taken[4] and p2_taken[4] == p2_taken[8]:
-                if p2_taken[0] == 0:
-                    return False
-                elif p2_taken[0] == 1:
-                    for x in (0,4,8):
-                        buttons[x].config(background = self.control.magic_carpet)
-                    turn_label.config(text="Player One Wins!")
-                    for x in (0,8):
-                        buttons[x].config(command=lambda: do_nothing())
-                elif p2_taken[0] == 2:
-                    for x in (0,4,8):
-                        buttons[x].config(background = self.control.wave_splash)
-                    turn_label.config(text="Player Two Wins!")
-                    for x in (0,8):
-                        buttons[x].config(command=lambda: do_nothing())
+            #036
+            if p2_taken[0] == 1 and p2_taken[3] == 1 and p2_taken[6] == 1:
+                for x in (0,3,6):
+                    buttons[x].config(background = self.control.magic_carpet)
+                turn_label.config(text="Player One Wins!")
+                for x in (0,8):
+                    buttons[x].config(command= lambda: do_nothing())
+            elif p2_taken[0] == 2 and p2_taken[3] == 2 and p2_taken[6] == 2:
+                for x in (0,3,6):
+                    buttons[x].config(background = self.control.magic_carpet)
+                turn_label.config(text="Player Two Wins!")
+                for x in (0,8):
+                    buttons[x].config(command= lambda: do_nothing())
 
-            if p2_taken[6] == p2_taken[4] and p2_taken[4] == p2_taken[2]:
-                if p2_taken[0] == 0:
-                    return False
-                elif p2_taken[0] == 1:
-                    for x in (6,4,2):
-                        buttons[x].config(background = self.control.magic_carpet)
-                    turn_label.config(text="Player One Wins!")
-                    for x in (0,8):
-                        buttons[x].config(command=lambda: do_nothing())
-                elif p2_taken[0] == 2:
-                    for x in (6,4,2):
-                        buttons[x].config(background = self.control.wave_splash)
-                    turn_label.config(text="Player Two Wins!")
-                    for x in (0,8):
-                        buttons[x].config(command=lambda: do_nothing())
+            #147
+            if p2_taken[1] == 1 and p2_taken[4] == 1 and p2_taken[7] == 1:
+                for x in (1,4,7):
+                    buttons[x].config(background = self.control.magic_carpet)
+                turn_label.config(text="Player One Wins!")
+                for x in (0,8):
+                    buttons[x].config(command= lambda: do_nothing())
+            elif p2_taken[1] == 2 and p2_taken[4] == 2 and p2_taken[7] == 2:
+                for x in (1,4,7):
+                    buttons[x].config(background = self.control.magic_carpet)
+                turn_label.config(text="Player Two Wins!")
+                for x in (0,8):
+                    buttons[x].config(command= lambda: do_nothing())
+
+            #258
+            if p2_taken[2] == 1 and p2_taken[5] == 1 and p2_taken[8] == 1:
+                for x in (2,5,8):
+                    buttons[x].config(background = self.control.magic_carpet)
+                turn_label.config(text="Player One Wins!")
+                for x in (0,8):
+                    buttons[x].config(command= lambda: do_nothing())
+            elif p2_taken[2] == 2 and p2_taken[5] == 2 and p2_taken[8] == 2:
+                for x in (2,5,8):
+                    buttons[x].config(background = self.control.magic_carpet)
+                turn_label.config(text="Player Two Wins!")
+                for x in (0,8):
+                    buttons[x].config(command= lambda: do_nothing())
+
+            #048
+            if p2_taken[0] == 1 and p2_taken[4] == 1 and p2_taken[8] == 1:
+                for x in (0,4,8):
+                    buttons[x].config(background = self.control.magic_carpet)
+                turn_label.config(text="Player One Wins!")
+                for x in (0,8):
+                    buttons[x].config(command= lambda: do_nothing())
+            elif p2_taken[0] == 2 and p2_taken[4] == 2 and p2_taken[8] == 2:
+                for x in (0,4,8):
+                    buttons[x].config(background = self.control.magic_carpet)
+                turn_label.config(text="Player Two Wins!")
+                for x in (0,8):
+                    buttons[x].config(command= lambda: do_nothing())
+
+            #246
+            if p2_taken[2] == 1 and p2_taken[4] == 1 and p2_taken[6] == 1:
+                for x in (2,4,6):
+                    buttons[x].config(background = self.control.magic_carpet)
+                turn_label.config(text="Player One Wins!")
+                for x in (0,8):
+                    buttons[x].config(command= lambda: do_nothing())
+            elif p2_taken[2] == 2 and p2_taken[4] == 2 and p2_taken[6] == 2:
+                for x in (2,4,6):
+                    buttons[x].config(background = self.control.magic_carpet)
+                turn_label.config(text="Player Two Wins!")
+                for x in (0,8):
+                    buttons[x].config(command= lambda: do_nothing())
 
 
         def do_nothing():
@@ -1302,25 +1460,36 @@ class TTT_Board_Two_Player(tk.Frame):
             turn_label.config(text="Player One's Turn")
             controller.show_frame("TTT_Settings")
             
-def flask_thread():
-    #Create flask webhost
-    app = Flask(__name__)
+# def flask_thread():
+#     #Create flask webhost
+#     app = Flask(__name__)
 
-    #flask --app main run (--host 0.0.0.0) to host, with optional outside exposure
-    @app.route("/")
-    def flask_rps(name=None):
-        return render_template('flaskhtml.html', name=name)
-    app.run()
+#     #flask --app main run (--host 0.0.0.0) to host, with optional outside exposure
+#     @app.route("/")
+#     def flask_rps(name=None):
+#         return render_template('flaskhtml.html', name=name)
 
-def main_loop_thread():
-    root = Page_Container()
-    root.mainloop()
+#     @app.route("/test" , methods=['GET', 'POST'])
+#     def test():
+#         select = request.form.get('rps-list-choices')
+#         print(select)
+#         return(str(select)) # just to see what select is
+    
+#     app.run()
+
+#def main_loop_thread():
+    # root = Page_Container()
+    # root.mainloop()
 
 if __name__ == '__main__':
-    server = Process(target=flask_thread)
-    server.start()
-    main_thread = Process(target=main_loop_thread)
-    main_thread.start()
+    # server = Process(target=flask_thread)
+    # server.start()
+    # main_thread = Process(target=main_loop_thread)
+    # main_thread.start()
+    
+    
+    root = Page_Container()
+    root.mainloop()
 
 
 # ideas:
