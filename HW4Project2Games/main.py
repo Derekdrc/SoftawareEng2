@@ -68,7 +68,7 @@ class Page_Container(tk.Tk):
 
         # iterating through a tuple consisting
         # of the different page layouts
-        for F, geometry in zip((Welcome, RPS_Settings, RPS_One_Choose, RPS_Two_Choose, RPS_Socket, RPS_Output, TTT_Settings, TTT_Board_One_Player, TTT_Board_Two_Player), ('300x300', '400x400', '300x300', '400x400', '490x150', '', '250x300', '400x400', '400x400')):
+        for F, geometry in zip((Welcome, RPS_Settings, RPS_One_Choose, RPS_Two_Choose, RPS_Socket, RPS_Output, TTT_Settings, TTT_Board_One_Player, TTT_Board_Two_Player), ('300x300', '400x400', '300x300', '400x400', '300x200', '', '250x300', '400x400', '400x400')):
             page_name = F.__name__
             frame = F(parent=container, controller=self)
 
@@ -340,7 +340,9 @@ class RPS_Socket(tk.Frame):
         self.grid_columnconfigure(0, weight=1)
         self.config(background=self.control.purple_illusion)
 
-        choose_label = Label(self, text="P1 Make your choice! P2 go to 127.0.0.1:5000 in your browser!", font=self.control.normal_font,
+        choose_label = Label(self, text="P1 Make your choice!", font=self.control.normal_font,
+                             foreground=self.control.seven_seas, background=self.control.purple_illusion, padx=5, pady=5)
+        ip_label  = Label(self, text="P2, in your browser go to: \n 127.0.0.1:5000 if on same device \n 10.0.0.147 if on different device", font=self.control.normal_font,
                              foreground=self.control.seven_seas, background=self.control.purple_illusion, padx=5, pady=5)
         rock_button = Button(self, text="Rock", relief=SUNKEN, background=self.control.continental_waters, command=lambda: rock_button_press())
         paper_button = Button(self, text="Paper", relief=RAISED, background=self.control.seven_seas, command=lambda: paper_button_press())
@@ -348,10 +350,11 @@ class RPS_Socket(tk.Frame):
         shoot_button = Button(self, text="Shoot!", relief=RAISED, background=self.control.magic_carpet, command=lambda: shoot_button_press())
 
         choose_label.grid(column=0, row=0, sticky=NSEW)
-        rock_button.grid(column=0, row=1, sticky=NSEW)
-        paper_button.grid(column=0, row=2, sticky=NSEW)
-        scissor_button.grid(column=0, row=3, sticky=NSEW)
-        shoot_button.grid(column=0, row=4, sticky=NSEW)
+        ip_label.grid(column=0, row = 1, sticky=NSEW)
+        rock_button.grid(column=0, row=2, sticky=NSEW)
+        paper_button.grid(column=0, row=3, sticky=NSEW)
+        scissor_button.grid(column=0, row=4, sticky=NSEW)
+        shoot_button.grid(column=0, row=5, sticky=NSEW)
 
         global player_one_choice
         player_one_choice = 1
@@ -528,19 +531,11 @@ class RPS_Output(tk.Frame):
         play_again_button.grid(row=4, column=3, sticky=NSEW)
 
         def home_button_press():
-            #global player_one_choice
-            #global player_two_choice
-            #player_one_choice = 0
-            #player_two_choice = 0
             controller.show_frame("Welcome")
             result_page.grid_forget()
             animation.grid()
 
         def restart_button_press():
-            #global player_one_choice
-            #global player_two_choice
-            #player_one_choice = 0
-            #player_two_choice = 0
             controller.show_frame("RPS_Settings")
             result_page.grid_forget()
             animation.grid()
@@ -1507,27 +1502,6 @@ class TTT_Board_Two_Player(tk.Frame):
             buttons[8].image = blank_photo_sub #type: ignore
             turn_label.config(text="Player One's Turn")
             controller.show_frame("TTT_Settings")
-            
-# def flask_thread():
-#     #Create flask webhost
-#     app = Flask(__name__)
-
-#     #flask --app main run (--host 0.0.0.0) to host, with optional outside exposure
-#     @app.route("/")
-#     def flask_rps(name=None):
-#         return render_template('flaskhtml.html', name=name)
-
-#     @app.route("/test" , methods=['GET', 'POST'])
-#     def test():
-#         select = request.form.get('rps-list-choices')
-#         print(select)
-#         return(str(select)) # just to see what select is
-    
-#     app.run()
-
-#def main_loop_thread():
-    # root = Page_Container()
-    # root.mainloop()
 
 
 # Flask Configuration
@@ -1554,21 +1528,19 @@ def flask_rps():
 def run():
     """Runs Flask Server"""
 
-    app.run(use_reloader=False)
+    app.run(use_reloader=False, host='0.0.0.0')
 #
 
 
 if __name__ == '__main__':
 
-    # Create two threads for both Flask and the updater to run continuously
+    # Create thread for Flask and set it to a daemon thread so it closes 
     flask = threading.Thread(target=run)
     flask.setDaemon(True)
-    #value_update = threading.Thread(target=value_updater)
 
 
-    # Start threads
+    # Start thread
     flask.start()
-    #value_update.start()
     
     # Start Tkinter
     root = Page_Container()
