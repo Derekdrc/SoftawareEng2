@@ -8,13 +8,9 @@ from tkinter import ttk
 import random
 import os
 import time
-from flask import Flask, request, render_template
 import threading
-from multiprocessing import Process, Value, Array
 import random
-import socket
 import time
-
 
 
 '''
@@ -191,6 +187,7 @@ class RPS_Settings(tk.Frame):
             two_player_socket_button.config(relief=SUNKEN, background=self.control.continental_waters)
 
         def ready_button_press():
+            print(f"buton pressed {choice}")
             if (rps_players == 1):
                 controller.show_frame("RPS_One_Choose")
             elif (rps_players == 2):
@@ -335,7 +332,7 @@ class RPS_Two_Choose(tk.Frame):
 
 
 class RPS_Socket(tk.Frame):
-    def __init__(self, parent, controller):
+    def __init__(self, parent, controller): 
         tk.Frame.__init__(self, parent)
         self.control = Controller_Class()
         self.config(padx=5, pady=5, background=self.control.purple_illusion)
@@ -1481,15 +1478,46 @@ class TTT_Board_Two_Player(tk.Frame):
     # root = Page_Container()
     # root.mainloop()
 
+
+from flask import Flask, request, render_template
+import time
+import multiprocessing
+
+choice = multiprocessing.Value('i', 0)
+app = Flask(__name__)
+app.config['choice'] = multiprocessing.Value('i', 0)
+#flask --app main run (--host 0.0.0.0) to host, with optional outside exposure
+
+@app.route("/", methods=['GET', 'POST'])
+def flask_rps():
+    if request.method == 'POST':
+        choice = request.form.get('rps-list-choices', -1)
+        app.config['choice'].value = int(choice)
+
+    return render_template('flaskhtml.html')
+
+def value_updater():
+    global choice
+    while True:
+        choice = app.config['choice']
+        time.sleep(1)
+
+
+def run():
+    app.run(use_reloader=False)
+
 if __name__ == '__main__':
-    # server = Process(target=flask_thread)
-    # server.start()
     # main_thread = Process(target=main_loop_thread)
     # main_thread.start()
-    
+    flask = threading.Thread(target=run)
+    value_updater = threading.Thread(target=value_updater)
+
+    flask.start()
+    value_updater.start()
     
     root = Page_Container()
     root.mainloop()
+
 
 
 # ideas:
