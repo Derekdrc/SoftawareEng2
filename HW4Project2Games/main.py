@@ -883,10 +883,6 @@ class TTT_Board_One_Player(tk.Frame):
             buttons[7].config(image=X_photo_sub, command=lambda: None)
             buttons[7].image = X_photo_sub #type: ignore
             check_winner()
-            counter = 0
-            for x in taken:
-                if taken[x] != 0:
-                    counter = counter +1
             computer_turn()
 
         def bot_right_button_press():
@@ -959,12 +955,11 @@ class TTT_Board_One_Player(tk.Frame):
                 time.sleep(0.5)
                 computers_turn = True
                 counter = 0
-                for x in taken:
+                for x in range (0,8):
                     if taken[x] !=0:
                         counter+=1
                 if counter >=8:
                     computers_turn = False
-                    turn_label.config(text="Cat Game!")
                 global solo_game_over
                 if solo_game_over == True:
                     computers_turn = False
@@ -980,10 +975,12 @@ class TTT_Board_One_Player(tk.Frame):
                 #hard mode
                 ai_turn = True
                 ai_counter = 0
-                for x in taken:
+                for x in range(0,8):
                     if taken[x] != 0:
-                        ai_counter = ai_counter + 1
-                if ai_counter >= 8:
+                        ai_counter+=1
+                if solo_game_over == True:
+                    ai_turn = False
+                if ai_counter >=8:
                     ai_turn = False
                 time.sleep(0.3)
                 if solo_game_over == True:
@@ -1012,12 +1009,14 @@ class TTT_Board_One_Player(tk.Frame):
             '''
             global taken
             global solo_game_over
+            winner = False
             #012
             if taken[0] == 1 and taken[1] == 1 and taken[2] == 1:
                 solo_game_over = True
                 for x in (0,1,2):
                     buttons[x].config(background = self.control.magic_carpet)
                 turn_label.config(text="Player One Wins!")
+                winner = True
                 for x in (0,8):
                     buttons[x].config(command= lambda: do_nothing())
             elif taken[0] == 2 and taken[1] == 2 and taken[2] == 2:
@@ -1025,6 +1024,7 @@ class TTT_Board_One_Player(tk.Frame):
                 for x in (0,1,2):
                     buttons[x].config(background = self.control.magic_carpet)
                 turn_label.config(text="Player Two Wins!")
+                winner = True
                 for x in (0,8):
                     buttons[x].config(command= lambda: do_nothing())
 
@@ -1034,6 +1034,7 @@ class TTT_Board_One_Player(tk.Frame):
                 for x in (3,4,5):
                     buttons[x].config(background = self.control.magic_carpet)
                 turn_label.config(text="Player One Wins!")
+                winner = True
                 for x in (0,8):
                     buttons[x].config(command= lambda: do_nothing())
             elif taken[3] == 2 and taken[4] == 2 and taken[5] == 2:
@@ -1041,6 +1042,7 @@ class TTT_Board_One_Player(tk.Frame):
                 for x in (3,4,5):
                     buttons[x].config(background = self.control.magic_carpet)
                 turn_label.config(text="Player Two Wins!")
+                winner = True
                 for x in (0,8):
                     buttons[x].config(command= lambda: do_nothing())
 
@@ -1050,6 +1052,7 @@ class TTT_Board_One_Player(tk.Frame):
                 for x in (6,7,8):
                     buttons[x].config(background = self.control.magic_carpet)
                 turn_label.config(text="Player One Wins!")
+                winner = True
                 for x in (0,8):
                     buttons[x].config(command= lambda: do_nothing())
             elif p2_taken[6] == 2 and p2_taken[7] == 2 and p2_taken[8] == 2:
@@ -1057,6 +1060,7 @@ class TTT_Board_One_Player(tk.Frame):
                 for x in (6,7,8):
                     buttons[x].config(background = self.control.magic_carpet)
                 turn_label.config(text="Player Two Wins!")
+                winner = True
                 for x in (0,8):
                     buttons[x].config(command= lambda: do_nothing())
 
@@ -1066,6 +1070,7 @@ class TTT_Board_One_Player(tk.Frame):
                 for x in (0,3,6):
                     buttons[x].config(background = self.control.magic_carpet)
                 turn_label.config(text="Player One Wins!")
+                winner = True
                 for x in (0,8):
                     buttons[x].config(command= lambda: do_nothing())
             elif taken[0] == 2 and taken[3] == 2 and taken[6] == 2:
@@ -1073,6 +1078,7 @@ class TTT_Board_One_Player(tk.Frame):
                 for x in (0,3,6):
                     buttons[x].config(background = self.control.magic_carpet)
                 turn_label.config(text="Player Two Wins!")
+                winner = True
                 for x in (0,8):
                     buttons[x].config(command= lambda: do_nothing())
 
@@ -1082,6 +1088,7 @@ class TTT_Board_One_Player(tk.Frame):
                 for x in (1,4,7):
                     buttons[x].config(background = self.control.magic_carpet)
                 turn_label.config(text="Player One Wins!")
+                winner = True
                 for x in (0,8):
                     buttons[x].config(command= lambda: do_nothing())
             elif taken[1] == 2 and taken[4] == 2 and taken[7] == 2:
@@ -1089,6 +1096,7 @@ class TTT_Board_One_Player(tk.Frame):
                 for x in (1,4,7):
                     buttons[x].config(background = self.control.magic_carpet)
                 turn_label.config(text="Player Two Wins!")
+                winner = True
                 for x in (0,8):
                     buttons[x].config(command= lambda: do_nothing())
 
@@ -1098,6 +1106,7 @@ class TTT_Board_One_Player(tk.Frame):
                 for x in (2,5,8):
                     buttons[x].config(background = self.control.magic_carpet)
                 turn_label.config(text="Player One Wins!")
+                winner = True
                 for x in (0,8):
                     buttons[x].config(command= lambda: do_nothing())
             elif taken[2] == 2 and taken[5] == 2 and taken[8] == 2:
@@ -1105,6 +1114,7 @@ class TTT_Board_One_Player(tk.Frame):
                 for x in (2,5,8):
                     buttons[x].config(background = self.control.magic_carpet)
                 turn_label.config(text="Player Two Wins!")
+                winner = True
                 for x in (0,8):
                     buttons[x].config(command= lambda: do_nothing())
 
@@ -1114,6 +1124,7 @@ class TTT_Board_One_Player(tk.Frame):
                 for x in (0,4,8):
                     buttons[x].config(background = self.control.magic_carpet)
                 turn_label.config(text="Player One Wins!")
+                winner = True
                 for x in (0,8):
                     buttons[x].config(command= lambda: do_nothing())
             elif taken[0] == 2 and taken[4] == 2 and taken[8] == 2:
@@ -1121,6 +1132,7 @@ class TTT_Board_One_Player(tk.Frame):
                 for x in (0,4,8):
                     buttons[x].config(background = self.control.magic_carpet)
                 turn_label.config(text="Player Two Wins!")
+                winner = True
                 for x in (0,8):
                     buttons[x].config(command= lambda: do_nothing())
 
@@ -1130,6 +1142,7 @@ class TTT_Board_One_Player(tk.Frame):
                 for x in (2,4,6):
                     buttons[x].config(background = self.control.magic_carpet)
                 turn_label.config(text="Player One Wins!")
+                winner = True
                 for x in (0,8):
                     buttons[x].config(command= lambda: do_nothing())
             elif taken[2] == 2 and taken[4] == 2 and taken[6] == 2:
@@ -1137,8 +1150,18 @@ class TTT_Board_One_Player(tk.Frame):
                 for x in (2,4,6):
                     buttons[x].config(background = self.control.magic_carpet)
                 turn_label.config(text="Player Two Wins!")
+                winner = True
                 for x in (0,8):
                     buttons[x].config(command= lambda: do_nothing())
+
+            #cat game
+            check_counter = 0
+            for x in range(0,8):
+                if taken[x] != 0:
+                    check_counter+=1
+            if check_counter == 8 and winner == False:
+                turn_label.config(text="Cat Game!")
+
                     
 
 
