@@ -1652,8 +1652,10 @@ def flask_rps():
 def run():
     """Runs Flask Server"""
 
-    app.run(use_reloader=False, host='0.0.0.0')
-#
+    app.run(use_reloader=False, host='0.0.0.0') 
+    #host='0.0.0.0' allows webpage to be accessed on different device
+    #but still on same network
+
 
 
 if __name__ == '__main__':
