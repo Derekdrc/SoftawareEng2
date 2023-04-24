@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Rock Paper Scissors</title>
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/4.4.1/socket.io.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var socket = io.connect('http://' + document.domain + ':' + location.port);
+
+            var playerOrder;
+            var myChoice;
+
+            socket.on('player_order', function (data) {
+                playerOrder = data.player_order;
+                $('#player-order').text('You are Player ' + playerOrder);
+            });
+
+            socket.on('result', function (data) {
+                $('#result').text(data.result);
+            });
+
+            $('#rock-button').click(function () {
+                myChoice = 'rock';
+                socket.emit('make_choice', { 'choice': myChoice });
+                $('#my-choice').text('You chose rock');
+            });
+
+            $('#paper-button').click(function () {
+                myChoice = 'paper';
+                socket.emit('make_choice', { 'choice': myChoice });
+                $('#my-choice').text('You chose paper');
+            });
+
+            $('#scissors-button').click(function () {
+                myChoice = 'scissors';
+                socket.emit('make_choice', { 'choice': myChoice });
+                $('#my-choice').text('You chose scissors');
+            });
+        });
+    </script>
+</head>
+
+<body>
+    <h1>Rock Paper Scissors</h1>
+    <p id="player-order"></p>
+    <div id="choices">
+        <button id="rock-button">Rock</button>
+        <button id="paper-button">Paper</button>
+        <button id="scissors-button">Scissors</button>
+    </div>
+    <p id="my-choice"></p>
+    <p id="result"></p>
+</body>
+
+</html>
